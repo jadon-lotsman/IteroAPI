@@ -1,13 +1,10 @@
 ﻿using System.Security.Claims;
-using Itero.BusinessLogic.DTOs;
-using Itero.BusinessLogic.Services;
-using Itero.BusinessLogic;
-using Itero.DataAccess.Data;
-using Itero.DataAccess.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Itero.API.Services;
+using Itero.API.Dtos;
 
 namespace Itero.API.Controllers
 {
@@ -16,27 +13,38 @@ namespace Itero.API.Controllers
     [Route("api/[controller]")]
     public class VocabularyController : ControllerBase
     {
-        private int UserId => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-        private readonly VocabularyService _vocabularyService;
-
         public VocabularyController(VocabularyService service)
         {
             _vocabularyService = service;
         }
 
+        private int UserId => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+        private readonly VocabularyService _vocabularyService;
+
 
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAllEntries()
         {
-            var entries = _vocabularyService.GetAll(UserId);
+            var entries = await _vocabularyService.GetAllEntriesAsync(UserId);
 
             return Ok(entries);
         }
 
-        [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetEntryById(int id)
         {
-            var entry = _vocabularyService.GetById(UserId, id);
+            var entry = await _vocabularyService.GetEntryByIdAsync(UserId, id);
+
+            if (entry == null)
+                return NotFound();
+
+            return Ok(entry);
+        }
+
+        [HttpGet("{key}")]
+        public async Task<IActionResult> GetEntryByKey(string key)
+        {
+            var entry = await _vocabularyService.GetEntryByKeyAsync(UserId, key);
 
             if (entry == null)
                 return NotFound();
@@ -45,20 +53,20 @@ namespace Itero.API.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(VocabularCreateDTO dto)
+        public async Task<IActionResult> CreateEntry(VocabularyEntryDTO dto)
         {
-            var result = _vocabularyService.Create(UserId, dto);
+            var result = await _vocabularyService.CreateEntryAsync(UserId, dto);
 
             if (result == null)
-                return BadRequest("Already exist");
+                return BadRequest();
 
             return Ok(result);
         }
 
         [HttpPut]
-        public IActionResult Update(int id, VocabularUpdateDTO dto)
+        public async Task<IActionResult> UpdateEntry(int id, VocabularyPatchDTO dto)
         {
-            var result = _vocabularyService.Update(UserId, id, dto);
+            var result = await _vocabularyService.PatchEntryAsync(UserId, id, dto);
 
             if (result == null)
                 return NotFound();
@@ -67,9 +75,9 @@ namespace Itero.API.Controllers
         }
 
         [HttpDelete]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> DeleteEntry(int id)
         {
-            var success = _vocabularyService.Remove(UserId, id);
+            var success = await _vocabularyService.RemoveEntryById(UserId, id);
 
             if(!success)
                 return NotFound();

@@ -4,15 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Itero.BusinessLogic.DTOs
+namespace Itero.API.Dtos
 {
-    public class VocabularUpdateDTO
+    public class VocabularyPatchDTO
     {
         public string? Foreign { get; set; }
         public string? Transcription { get; set; }
         public string[]? ExamplesAdd { get; set; }
-        public string[]? ExamplesDelete { get; set; }
+        public string[]? ExamplesRemove { get; set; }
         public string[]? TranslationsAdd { get; set; }
-        public string[]? TranslationsDelete { get; set; }
+        public string[]? TranslationsRemove { get; set; }
     }
 }

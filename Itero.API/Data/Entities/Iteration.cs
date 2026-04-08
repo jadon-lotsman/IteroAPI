@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Itero.DataAccess.Data.Entities
+namespace Itero.API.Data.Entities
 {
     public class Iteration
     {
         public int Id { get; set; }
+        public bool InProcess { get; set; }
+        public List<IterationStep>? Questions { get; set; }
         public DateTime Created { get; set; }
-        public List<IterationPart>? Questions { get; set; }
 
 
         public int UserId { get; set; }
@@ -19,12 +20,14 @@ namespace Itero.DataAccess.Data.Entities
 
         public Iteration() { }
 
-        public Iteration(User user, List<IterationPart> questions)
+        public Iteration(User user, List<IterationStep> questions)
         {
-            Created = DateTime.UtcNow;
-            
-            User = user;
+            InProcess = true;
+
             Questions = questions;
+            User = user;
+
+            Created = DateTime.UtcNow;
         }
     }
 }

@@ -4,22 +4,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Itero.DataAccess.Data.Entities;
+using Itero.API.Data.Entities;
 
-namespace Itero.DataAccess.Data
+namespace Itero.API.Data
 {
     public class AppDbContext : DbContext
     {
         public DbSet<User> Users { get; set; }
         public DbSet<VocabularyEntry> Entries { get; set; }
         public DbSet<Iteration> Iterations { get; set; }
-        public DbSet<IterationPart> IterationQuestions { get; set; }
+        public DbSet<IterationStep> Questions { get; set; }
         
 
         public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)
         {
-            // Database.EnsureDeleted();
+            //Database.EnsureDeleted();
             Database.EnsureCreated();
         }
     }

@@ -1,5 +1,5 @@
 ﻿using System.Security.Claims;
-using Itero.BusinessLogic.Services;
+using Itero.API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,31 +21,42 @@ namespace Itero.API.Controllers
 
 
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> GetIteration()
         {
-            var iteration = _iterationService.GetIteration(UserId);
+            var iteration = await _iterationService.GetIterationAsync(UserId);
 
             if (iteration == null) 
-                return BadRequest("Is null");
+                return NotFound();
 
             return Ok(iteration);
+        }
+
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetIterationStepById(int stepId)
+        {
+            var step = await _iterationService.GetIterationStepByIdASync(UserId, stepId);
+
+            if (step == null)
+                return NotFound();
+
+            return Ok(step);
         }
 
         [HttpPost]
-        public IActionResult Create()
+        public async Task<IActionResult> CreateIteration()
         {
-            var iteration = _iterationService.Create(UserId);
+            var result = await _iterationService.CreateIterationAsync(UserId);
 
-            if (iteration == null)
+            if (result == null)
                 return BadRequest("Already exist");
 
-            return Ok(iteration);
+            return Ok(result);
         }
 
-        [HttpPost("set")]
-        public IActionResult SetValue(int id)
+        [HttpPost("setStep")]
+        public async Task<IActionResult> SetIterationStepValue(int stepId, string userValue)
         {
-            var success = _iterationService.SetValue(UserId, id);
+            var success = await _iterationService.SetStepValueAsync(UserId, stepId, userValue);
 
             if (!success)
                 return NotFound();
@@ -54,11 +65,11 @@ namespace Itero.API.Controllers
         }
 
         [HttpPost("result")]
-        public IActionResult GetResult(int id)
+        public async Task<IActionResult> ResultIteration()
         {
-            var result = _iterationService.GetIterationQuestionById(UserId, id);
+            
 
-            return Ok(result);
+            return Ok();
         }
     }
 }

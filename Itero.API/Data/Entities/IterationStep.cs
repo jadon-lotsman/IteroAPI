@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Itero.DataAccess.Data.Entities
+namespace Itero.API.Data.Entities
 {
-    public class IterationPart
+    public class IterationStep
     {
         public int Id { get; set; } 
         public bool IsForwardQuestion { get; set; }
@@ -22,9 +22,9 @@ namespace Itero.DataAccess.Data.Entities
         public VocabularyEntry BasedEntry { get; set; }
 
 
-        public IterationPart() { }
+        public IterationStep() { }
 
-        public IterationPart(VocabularyEntry source, bool isForwardQuestion)
+        public IterationStep(VocabularyEntry source, bool isForwardQuestion)
         {
             IsForwardQuestion = isForwardQuestion;
 

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Itero.DataAccess.Data;
-using Itero.DataAccess.Data.Entities;
+using Itero.API.Data;
+using Itero.API.Data.Entities;
 
-namespace Itero.BusinessLogic.Services
+namespace Itero.API.Services
 {
     public class UserService
     {

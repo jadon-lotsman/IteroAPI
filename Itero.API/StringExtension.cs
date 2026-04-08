@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
-namespace Itero.BusinessLogic
+namespace Itero.API
 {
     public static class StringExtension
     {
@@ -16,6 +12,33 @@ namespace Itero.BusinessLogic
 
             return string.Join("", letters);
         }
+
+        public static string RemoveMultispaces(this string str)
+        {
+            str = str.Trim();
+            str = Regex.Replace(str, @"\s+", " ");
+
+            return new string(str);
+        }
+
+        public static string WrapWithBracketsIfNeeded(this string str)
+        {
+            if (!str.StartsWith("["))
+                str = "[" + str;
+            if (!str.EndsWith("]"))
+                str = str + "]";
+
+            return str;
+        }
+
+        public static string AddPointIfNeeded(this string str)
+        {
+            if (!str.TrimEnd().EndsWith('.'))
+                str = str + '.';
+
+            return str;
+        }
+
 
         public static float GetSimilarity(this string str1, string str2)
         {
@@ -33,13 +56,6 @@ namespace Itero.BusinessLogic
             return intersect.Length / (unique_letters.Length + sub_intersect * 0.5f);
         }
 
-        public static string RemoveMultispaces(this string str)
-        {
-            str = str.Trim();
-            str = Regex.Replace(str, @"\s+", " ");
-
-            return new string(str);
-        }
 
         public static string[] SplitIgnored(this string str, char separator, char ignore)
         {

@@ -5,10 +5,6 @@ VisualStudioVersion = 17.14.36518.9
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Itero.API", "Itero.API\Itero.API.csproj", "{C28D8953-8053-C9A2-619B-DC8764AE655B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Itero.BusinessLogic", "Itero.BusinessLogic\Itero.BusinessLogic.csproj", "{992378A5-232F-5DC1-F51F-8162D8A8A15C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Itero.DataAccess", "Itero.DataAccess\Itero.DataAccess.csproj", "{540CE535-E245-ED1C-0017-D684E13270CE}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,14 +15,6 @@ Global
 		{C28D8953-8053-C9A2-619B-DC8764AE655B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C28D8953-8053-C9A2-619B-DC8764AE655B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C28D8953-8053-C9A2-619B-DC8764AE655B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{992378A5-232F-5DC1-F51F-8162D8A8A15C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{992378A5-232F-5DC1-F51F-8162D8A8A15C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{992378A5-232F-5DC1-F51F-8162D8A8A15C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{992378A5-232F-5DC1-F51F-8162D8A8A15C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{540CE535-E245-ED1C-0017-D684E13270CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{540CE535-E245-ED1C-0017-D684E13270CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{540CE535-E245-ED1C-0017-D684E13270CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{540CE535-E245-ED1C-0017-D684E13270CE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

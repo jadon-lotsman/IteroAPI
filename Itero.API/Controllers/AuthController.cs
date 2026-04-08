@@ -1,10 +1,10 @@
 ﻿using System.Security.Claims;
 using System.Text;
-using Itero.DataAccess.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
-using Itero.BusinessLogic.Services;
+using Itero.API.Services;
+using Itero.API.Data.Entities;
 
 namespace Itero.API.Controllers
 {
@@ -26,6 +26,7 @@ namespace Itero.API.Controllers
         public IActionResult Login(string username)
         {
             User? user = _userService.GetByUsername(username);
+
             if (user == null)
                 return Unauthorized();
 
@@ -38,6 +39,7 @@ namespace Itero.API.Controllers
         public IActionResult Register(string username)
         {
             User? user = _userService.GetByUsername(username);
+
             if (user != null)
                 return BadRequest();
 
