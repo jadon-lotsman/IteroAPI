@@ -31,7 +31,7 @@ namespace Itereta.Common
             return str;
         }
 
-        public static string AddPointIfNeeded(this string str)
+        public static string AddLastPointIfNeeded(this string str)
         {
             if (!str.TrimEnd().EndsWith('.'))
                 str = str + '.';
@@ -40,20 +40,44 @@ namespace Itereta.Common
         }
 
 
-        public static float GetSimilarity(this string str1, string str2)
+        public static double ComputeLevenshteinSimilarity(this string a, string b)
         {
-            str1 = str1.ToLower().Replace(" ", "");
-            str2 = str2.ToLower().Replace(" ", "");
+            const double delete_cost = 1.0d;
+            const double insertion_cost = 1.1d;
+            const double replacement_cost = 1.05d;
 
-            char[] str1_array = str1.ToCharArray();
-            char[] str2_array = str2.ToCharArray();
+            a = a.ToLower().Replace(" ", "");
+            b = b.ToLower().Replace(" ", "");
 
-            char[] unique_letters = str1_array.Union(str2_array).ToArray();
+            int m = a.Length+1;
+            int n = b.Length+1;
 
-            char[] intersect = str1_array.Intersect(str2_array).ToArray();
-            int sub_intersect = Math.Abs(intersect.Length - unique_letters.Length);
+            double [,] D = new double[m, n];
 
-            return intersect.Length / (unique_letters.Length + sub_intersect * 0.5f);
+            for (int i = 0; i < m; i++)
+                D[i, 0] = i;
+            for (int j = 0; j < n; j++)
+                D[0, j] = j;
+
+            for (int i = 1; i < m; i++)
+            {
+                for (int j = 1; j < n; j++)
+                {
+                    double cost = a[i-1] == b[j-1] ? 0 : replacement_cost;
+                    D[i, j] = Math.Min
+                    (
+                        D[i - 1, j] + delete_cost,
+
+                        Math.Min
+                        (
+                            D[i, j - 1] + insertion_cost,
+                            D[i - 1, j - 1] + cost
+                        )
+                    );
+                }
+            }
+
+            return 1 - (D[m-1, n-1] / (m + n));
         }
 
 

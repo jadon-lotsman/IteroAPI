@@ -203,19 +203,19 @@ namespace Itereta.Services
         }
 
 
-        private double GetRepetitionQuality(Iterette iterette, VocabularyEntry entry)
+        public double GetRepetitionQuality(Iterette iterette, VocabularyEntry entry)
         {
             double Stability = Math.Exp(-1.0f * (iterette.ActionCounter - 1));
 
             double Accuracy = GetAnswerAccuracy(iterette, entry);
+            if (Accuracy < 0.8d) Accuracy = 0;
 
-            var sumTime = iterette.Iteration.FinishedAt - iterette.Iteration.StartedAt;
-            var averageTime = sumTime / iterette.Iteration.Iterettes.Count;
+            var averageTime = (iterette.Iteration.FinishedAt - iterette.Iteration.StartedAt) / iterette.Iteration.Iterettes.Count;
 
-            //double Reaction = averageTime.Value.TotalSeconds / iterette.ActionTimeSpan.TotalSeconds;
-            //Reaction = Math.Clamp(Reaction, 0.6, 1.1);
+            double Reaction = averageTime.Value.TotalSeconds / iterette.ActionTimeSpan.TotalSeconds;
+            Reaction = Math.Clamp(Reaction, 0.8, 1.1);
 
-            double Knowledge = 0.2 * Stability + 0.8 * Accuracy;
+            double Knowledge = 0.8 * Accuracy + 0.1 * Stability + 0.1 * Reaction;
 
             double Quality = Knowledge * 5;
 
@@ -227,9 +227,9 @@ namespace Itereta.Services
             string userAnswer = iterette.UserAnswer;
 
             if (iterette.IsForwardQuestion)
-                return entry.Translations.Max(userAnswer.GetSimilarity);
+                return entry.Translations.Max(userAnswer.ComputeLevenshteinSimilarity);
             else
-                return userAnswer.GetSimilarity(entry.Foreign);
+                return userAnswer.ComputeLevenshteinSimilarity(entry.Foreign);
         }
     }
 }

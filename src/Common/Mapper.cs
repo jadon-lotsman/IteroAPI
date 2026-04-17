@@ -22,7 +22,6 @@ namespace Itereta.Common
         }
 
 
-
         public static VocabularyResponseDto? MapToDto(VocabularyEntry? entry)
         {
             if (entry == null) return null;
@@ -81,7 +80,6 @@ namespace Itereta.Common
         }
 
 
-
         public static void PatchFromDto(VocabularyEntry entry, VocabularyPatchDto patchDto)
         {
             // Foreign patch
@@ -127,22 +125,30 @@ namespace Itereta.Common
 
 
 
-        public static string PrepareForeign(string foreign)
+        public static string PrepareForeign(string? foreign)
         {
+            if (foreign == null)
+                return string.Empty;
+
+
             return foreign
                 .RemoveMultispaces()
                 .ToLowerInvariant();
         }
 
-        public static string PrepareTranscription(string trascription)
+        public static string PrepareTranscription(string? trascription)
         {
+            if (trascription == null)
+                return string.Empty;
+
+
             return trascription
                 .RemoveMultispaces()
                 .ToLowerInvariant()
                 .WrapWithBracketsIfNeeded();
         }
 
-        public static string[] PrepareExamples(IEnumerable<string> examples)
+        public static string[] PrepareExamples(IEnumerable<string>? examples)
         {
             if (examples == null)
                 return Array.Empty<string>();
@@ -151,12 +157,12 @@ namespace Itereta.Common
                 .Where(e => !string.IsNullOrWhiteSpace(e))
                 .Select(e => e.RemoveMultispaces()
                                .ToLowerInvariant()
-                               .AddPointIfNeeded())
+                               .AddLastPointIfNeeded())
                 .Distinct()
                 .ToArray();
         }
 
-        public static string[] PrepareTranslations(IEnumerable<string> translations)
+        public static string[] PrepareTranslations(IEnumerable<string>? translations)
         {
             if (translations == null)
                 return Array.Empty<string>();
