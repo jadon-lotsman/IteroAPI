@@ -1,15 +1,12 @@
-﻿using Itereta.Contracts.Dtos.Iteration;
-using Itereta.Data.Entities;
-
-namespace Itereta.Common
+﻿namespace Mnemo.Common
 {
     public static class SM2Helper
     {
         public const double MinEF = 1.3;
         public const double InitEF = 2.5;
 
-        private const int MinInterval = 1;
-        private const int MaxInterval = 365;
+        public const int MinInterval = 1;
+        public const int MaxInterval = 365;
 
         private const int FirstIntervalDays = 1;
         private const int SecondIntervalDays = 3;
@@ -38,10 +35,8 @@ namespace Itereta.Common
             int newInterval;
             double newEasinessFactor;
 
-
             newEasinessFactor = easinessFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
             newEasinessFactor = Math.Max(newEasinessFactor, MinEF);
-
 
             if (!IsPassingQuality(quality))
             {

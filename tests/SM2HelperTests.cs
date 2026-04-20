@@ -1,4 +1,4 @@
-using Itereta.Common;
+using Mnemo.Common;
 
 namespace tests
 {

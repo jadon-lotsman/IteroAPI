@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Itereta.Common
+namespace Mnemo.Common
 {
     public static class StringExtension
     {
@@ -77,7 +77,7 @@ namespace Itereta.Common
                 }
             }
 
-            return 1 - (D[m-1, n-1] / (m + n));
+            return 1 - D[m-1, n-1] / (m + n);
         }
 
 

@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Itereta.Common;
-using Itereta.Contracts.Dtos.Iteration;
-using Itereta.Data;
-using Itereta.Data.Entities;
 using Microsoft.EntityFrameworkCore;
+using Mnemo.Common;
+using Mnemo.Contracts.Dtos.Repetition;
+using Mnemo.Data;
+using Mnemo.Data.Entities;
 
-namespace Itereta.Services
+namespace Mnemo.Services
 {
     public class VocabularyIterationService
     {
@@ -28,58 +28,56 @@ namespace Itereta.Services
         }
 
 
-        public async Task<RequestResult<Iteration>> GetIterationStatusAsync(int userId)
+        public async Task<RequestResult<RepetitionSession>> GetIterationStatusAsync(int userId)
         {
             var iteration = await GetIterationAsync(userId);
-            if (iteration == null) return RequestResult<Iteration>.Failure("ITERATION_NOT_FOUND");
-            if (iteration.IsFinished) return RequestResult<Iteration>.Failure("ITERATION_WAS_FINISHED");
-            else return RequestResult<Iteration>.Failure("ITERATION_IN_PROCESS");
+            if (iteration == null) return RequestResult<RepetitionSession>.Failure("ITERATION_NOT_FOUND");
+            if (iteration.IsFinished) return RequestResult<RepetitionSession>.Failure("ITERATION_WAS_FINISHED");
+            else return RequestResult<RepetitionSession>.Failure("ITERATION_IN_PROCESS");
         }
 
-        public async Task<Iteration?> GetIterationAsync(int userId)
+        public async Task<RepetitionSession?> GetIterationAsync(int userId)
         {
-            return await _context.Iterations
-                .Include(i => i.Iterettes)
+            return await _context.RepetitionSessions
+                .Include(i => i.Tasks)
                 .FirstOrDefaultAsync(e => e.User.Id == userId);
         }
 
-        public async Task<List<Iterette>> GetAllIterettesAsync(int userId)
+        public async Task<List<RepetitionTask>> GetAllIterettesAsync(int userId)
         {
-            return await _context.Iterettes
-                .Where(i => i.Iteration.UserId == userId)
+            return await _context.RepetitionTasks
+                .Where(i => i.RepetitionSession.UserId == userId)
                 .ToListAsync();
         }
 
-        public async Task<Iterette?> GetIteretteByIdAsync(int userId, int iteretteId)
+        public async Task<RepetitionTask?> GetIteretteByIdAsync(int userId, int iteretteId)
         {
-            return await _context.Iterettes
-                .Include(i => i.Iteration)
-                .FirstOrDefaultAsync(s => s.Id == iteretteId && s.Iteration.UserId == userId);
+            return await _context.RepetitionTasks
+                .Include(i => i.RepetitionSession)
+                .FirstOrDefaultAsync(s => s.Id == iteretteId && s.RepetitionSession.UserId == userId);
         }
 
-        public async Task<RepetitionState?> GetRepetitionStateByEntryIdAsync(int userId, int repetitionId)
+        public async Task<RepetitionState?> GetRepetitionStateByEntryIdAsync(int userId, int entryId)
         {
             return await _context.RepetitionStates
-                .FirstOrDefaultAsync(r => r.UserId == userId && r.Id == repetitionId);
+                .FirstOrDefaultAsync(r => r.UserId == userId && r.VocabularyEntryId == entryId);
         }
 
 
-        public async Task<RequestResult<Iteration>> StartIterationAsync(int userId)
+
+        public async Task<RequestResult<RepetitionSession>> StartIterationAsync(int userId)
         {
             var user = await _accountService.GetByIdAsync(userId);
 
             if (user == null)
-                return RequestResult<Iteration>.Failure("USER_NOT_FOUND");
+                return RequestResult<RepetitionSession>.Failure("USER_NOT_FOUND");
 
 
-            var iterationById = await GetIterationAsync(userId);
+            if (user.RepetitionSession != null && user.RepetitionSession.InProccess)
+                return RequestResult<RepetitionSession>.Failure("ITERATION_NOT_FINISHED");
 
-            if (iterationById != null && !iterationById.IsFinished)
-                return RequestResult<Iteration>.Failure("ITERATION_NOT_FINISHED");
-
-            else if (iterationById != null && iterationById.IsFinished)
-                _context.Iterations.Remove(iterationById);
-
+            else if (user.RepetitionSession != null && user.RepetitionSession.IsFinished)
+                _context.RepetitionSessions.Remove(user.RepetitionSession);
 
             var entriesWithoutState = await _vocabularyService.GetAllEntriesWithoutStateAsync(userId);
 
@@ -90,27 +88,27 @@ namespace Itereta.Services
 
 
             var targetEntries = _vocabularyService.GetListOfRandomEntries(userId);
-            List<Iterette> iterettes = targetEntries
-                .Select(e => new Iterette(e, _random.Next(2) == 0)).ToList();
+            List<RepetitionTask> iterettes = targetEntries
+                .Select(e => new RepetitionTask(e, _random.Next(2) == 0)).ToList();
 
 
-            var iteration = new Iteration(user, iterettes);
+            var iteration = new RepetitionSession(user, iterettes);
 
-            await _context.Iterations.AddAsync(iteration);
+            await _context.RepetitionSessions.AddAsync(iteration);
             await _context.SaveChangesAsync();
 
-            return RequestResult<Iteration>.Success(iteration);
+            return RequestResult<RepetitionSession>.Success(iteration);
         }
 
-        public async Task<RequestResult<IterationResultDto>> FinishIterationAsync(int userId)
+        public async Task<RequestResult<RepetitionSessionResultDto>> FinishIterationAsync(int userId)
         {
             var iteration = await GetIterationAsync(userId);
 
             if (iteration == null)
-                return RequestResult<IterationResultDto>.Failure("ITERATION_NOT_FOUND");
+                return RequestResult<RepetitionSessionResultDto>.Failure("ITERATION_NOT_FOUND");
 
-            if (iteration.Iterettes == null)
-                return RequestResult<IterationResultDto>.Failure("ITERATION_HAS_NO_ITERETTES");
+            if (iteration.Tasks == null)
+                return RequestResult<RepetitionSessionResultDto>.Failure("ITERATION_HAS_NO_ITERETTES");
 
 
             if (!iteration.IsFinished)
@@ -120,14 +118,14 @@ namespace Itereta.Services
             }
 
 
-            var entriesIds = iteration.Iterettes
+            var entriesIds = iteration.Tasks
                 .Select(i => i.BaseVocabularyEntryId).ToList();
             var entriesDict = await _vocabularyService.GetEntriesDictByIdsAsync(userId, entriesIds);
 
             int missedCount = 0;
             var failedEntries = new List<VocabularyEntry>();
 
-            foreach (var iterette in iteration.Iterettes)
+            foreach (var iterette in iteration.Tasks)
             {
                 if (entriesDict.TryGetValue(iterette.BaseVocabularyEntryId, out var baseEntry) && baseEntry != null)
                 {
@@ -143,41 +141,41 @@ namespace Itereta.Services
             }
 
 
-            int totalCount = iteration.Iterettes.Count - missedCount;
+            int totalCount = iteration.Tasks.Count - missedCount;
             int correctCount = totalCount - failedEntries.Count;
 
-            var result = new IterationResultDto(
+            var result = new RepetitionSessionResultDto(
                 correctCount,
                 totalCount,
                 Mapper.MapToDto(failedEntries),
                 iteration.StartedAt,
                 iteration.FinishedAt!.Value);
 
-            return RequestResult<IterationResultDto>.Success(result);
+            return RequestResult<RepetitionSessionResultDto>.Success(result);
         }
 
-        public async Task<RequestResult<Iterette>> SubmitIteretteAnswerAsync(int userId, int iteretteId, string answer)
+        public async Task<RequestResult<RepetitionTask>> SubmitIteretteAnswerAsync(int userId, int iteretteId, string answer)
         {
-            var iterette = await GetIteretteByIdAsync(userId, iteretteId);
+            var task = await GetIteretteByIdAsync(userId, iteretteId);
 
-            if (iterette == null)
-                return RequestResult<Iterette>.Failure("ITERETTE_NOT_FOUND");
+            if (task == null)
+                return RequestResult<RepetitionTask>.Failure("ITERETTE_NOT_FOUND");
 
-            if (iterette.Iteration.IsFinished)
-                return RequestResult<Iterette>.Failure("ITERATION_WAS_FINISHED");
+            if (task.RepetitionSession.IsFinished)
+                return RequestResult<RepetitionTask>.Failure("ITERATION_WAS_FINISHED");
 
 
             var currentTime     = DateTime.UtcNow;
-            var lastActionTime  = iterette.Iteration.LastActionAt;
+            var lastActionTime  = task.RepetitionSession.LastActionAt;
 
-            iterette.ActionCounter++;
-            iterette.UserAnswer             = answer;
-            iterette.ActionTimeSpan         = currentTime - lastActionTime;
-            iterette.Iteration.LastActionAt = currentTime;
+            task.ActionCounter++;
+            task.UserAnswer             = answer;
+            task.ActionTimeSpan         = currentTime - lastActionTime;
+            task.RepetitionSession.LastActionAt = currentTime;
 
             await _context.SaveChangesAsync();
 
-            return RequestResult<Iterette>.Success(iterette);
+            return RequestResult<RepetitionTask>.Success(task);
         }
 
         public async Task<RequestResult<RepetitionState>> SelfAssessmentAsync(int userId, int entryId, double quality)
@@ -204,10 +202,10 @@ namespace Itereta.Services
             return RequestResult<RepetitionState>.Success(state);
         }
 
-        private async Task<RequestResult<RepetitionState>> AutoAssessmentAsync(int userId, Iterette iterette, VocabularyEntry entry)
+        private async Task<RequestResult<RepetitionState>> AutoAssessmentAsync(int userId, RepetitionTask iterette, VocabularyEntry entry)
         {
             double similarity = GetMaxAnswerSimilarity(iterette, entry);
-            double quality = SM2Helper.ComputeQuality(iterette.Iteration.AverageActionTime, iterette.ActionTimeSpan, iterette.ActionCounter, similarity);
+            double quality = SM2Helper.ComputeQuality(iterette.RepetitionSession.AverageActionTime, iterette.ActionTimeSpan, iterette.ActionCounter, similarity);
 
             var state = await GetRepetitionStateByEntryIdAsync(userId, entry.Id);
 
@@ -217,7 +215,7 @@ namespace Itereta.Services
             // Auto features
             state.IterationCounter  = SM2Helper.IsPassingQuality(quality) ? state.IterationCounter + 1 : 0;
             state.CanSelfAssess     = SM2Helper.IsPassingQuality(quality);
-            state.LastIterationAt   = DateTime.UtcNow;
+            state.LastRepetitionAt  = DateOnly.FromDateTime(DateTime.UtcNow);
 
             (int interval, double easinessFactor) 
                 = SM2Helper.NextIntervalAndEf(state.EasinessFactor, state.IterationInterval, state.IterationCounter, quality);
@@ -230,7 +228,7 @@ namespace Itereta.Services
             return RequestResult<RepetitionState>.Success(state);
         }
 
-        private double GetMaxAnswerSimilarity(Iterette iterette, VocabularyEntry entry)
+        private double GetMaxAnswerSimilarity(RepetitionTask iterette, VocabularyEntry entry)
         {
             string userAnswer = iterette.UserAnswer;
 

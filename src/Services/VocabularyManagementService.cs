@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Itereta.Common;
-using Itereta.Contracts.Dtos.Vocabulary;
-using Itereta.Data;
-using Itereta.Data.Entities;
 using Microsoft.EntityFrameworkCore;
+using Mnemo.Common;
+using Mnemo.Contracts.Dtos.Vocabulary;
+using Mnemo.Data;
+using Mnemo.Data.Entities;
 
-namespace Itereta.Services
+namespace Mnemo.Services
 {
     public class VocabularyManagementService
     {
@@ -71,19 +71,18 @@ namespace Itereta.Services
                 .ToList();
         }
 
-        public List<VocabularyEntry> GetListOfDueEntries(int userId, int count=5)
+        public async Task<List<VocabularyEntry>> GetListOfDueEntries(int userId, int count=5)
         {
-            return _context.Entries.Where(e => e.User.Id == userId)
+            return await _context.Entries.Where(e => e.User.Id == userId)
                 .Include(e => e.RepetitionState)
-                .Where(e => e.RepetitionState.NextIterationAt <= DateTime.UtcNow)
-                .AsEnumerable()
-                .OrderBy(x => Guid.NewGuid())
+                .Where(e => e.RepetitionState.NextRepetitionAt <= DateOnly.FromDateTime(DateTime.UtcNow))
                 .Take(count)
-                .ToList();
+                .ToListAsync();
         }
 
 
-        public async Task<RequestResult<VocabularyEntry>> CreateEntryAsync(int userId, VocabularyCreateDto dto)
+
+        public async Task<RequestResult<VocabularyEntry>> CreateEntryAsync(int userId, VocabularyEntryCreateDto dto)
         {
             if (!Mapper.ValidDto(dto))
                 return RequestResult<VocabularyEntry>.Failure("INVALID_DATA");
@@ -110,7 +109,7 @@ namespace Itereta.Services
             return RequestResult<VocabularyEntry>.Success(entry);
         }
 
-        public async Task<RequestResult<VocabularyEntry>> PatchEntryAsync(int userId, int entryId, VocabularyPatchDto patchDto)
+        public async Task<RequestResult<VocabularyEntry>> PatchEntryAsync(int userId, int entryId, VocabularyEntryPatchDto patchDto)
         {
             if (!Mapper.ValidDto(patchDto))
                 return RequestResult<VocabularyEntry>.Failure("INVALID_DATA");

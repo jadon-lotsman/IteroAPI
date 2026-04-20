@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Itereta.Contracts.Dtos.Vocabulary
+namespace Mnemo.Contracts.Dtos.Vocabulary
 {
-    public class VocabularyResponseDto
+    public class VocabularyEntryResponseDto
     {
         public int Id { get; set; }
         public string? Foreign { get; set; }

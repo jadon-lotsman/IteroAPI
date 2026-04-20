@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Itereta.Data.Entities
+namespace Mnemo.Data.Entities
 {
-    public class Iterette
+    public class RepetitionTask
     {
         public int Id { get; set; }
         public int BaseVocabularyEntryId { get; set; }
@@ -17,13 +17,14 @@ namespace Itereta.Data.Entities
         public int ActionCounter { get; set; }
         public TimeSpan ActionTimeSpan { get; set; }
 
-        public int IterationId { get; set; }
-        public Iteration Iteration { get; set; }
+
+        public int RepetitionSessionId { get; set; }
+        public RepetitionSession RepetitionSession { get; set; }
 
 
-        public Iterette() { }
+        public RepetitionTask() { }
 
-        public Iterette(VocabularyEntry entry, bool isForwardQuestion)
+        public RepetitionTask(VocabularyEntry entry, bool isForwardQuestion)
         {
             BaseVocabularyEntryId = entry.Id;
 

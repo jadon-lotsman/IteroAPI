@@ -1,13 +1,13 @@
 ﻿using System.Security.Claims;
-using Itereta.Common;
-using Itereta.Services;
 using Itereta.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Mnemo.Common;
+using Mnemo.Services;
 
-namespace Itereta.Controllers
+namespace Mnemo.Controllers
 {
     [ApiController]
     [Authorize]

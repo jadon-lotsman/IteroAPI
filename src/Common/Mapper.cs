@@ -1,20 +1,20 @@
 ﻿using System.Formats.Tar;
 using System.Reflection;
-using Itereta.Contracts.Dtos.Iteration;
-using Itereta.Contracts.Dtos.Vocabulary;
-using Itereta.Data.Entities;
 using Microsoft.IdentityModel.Tokens;
+using Mnemo.Contracts.Dtos.Repetition;
+using Mnemo.Contracts.Dtos.Vocabulary;
+using Mnemo.Data.Entities;
 
-namespace Itereta.Common
+namespace Mnemo.Common
 {
     public static class Mapper
     {
-        public static bool ValidDto(VocabularyCreateDto? dto)
+        public static bool ValidDto(VocabularyEntryCreateDto? dto)
         {
             return dto != null && dto.Foreign != string.Empty && dto.Translations != null && dto.Translations.Any(t => !string.IsNullOrWhiteSpace(t));
         }
 
-        public static bool ValidDto(VocabularyPatchDto? dto)
+        public static bool ValidDto(VocabularyEntryPatchDto? dto)
         {
             if (dto == null) return false;
             var properties = dto.GetType().GetProperties();
@@ -22,11 +22,11 @@ namespace Itereta.Common
         }
 
 
-        public static VocabularyResponseDto? MapToDto(VocabularyEntry? entry)
+        public static VocabularyEntryResponseDto? MapToDto(VocabularyEntry? entry)
         {
             if (entry == null) return null;
 
-            return new VocabularyResponseDto
+            return new VocabularyEntryResponseDto
             {
                 Id              =   entry.Id,
                 Foreign         =   PrepareForeign(entry.Foreign),
@@ -36,7 +36,7 @@ namespace Itereta.Common
             };
         }
 
-        public static VocabularyResponseDto[] MapToDto(IEnumerable<VocabularyEntry> entries)
+        public static VocabularyEntryResponseDto[] MapToDto(IEnumerable<VocabularyEntry> entries)
         {
             return entries
                 .Where(e => e != null)
@@ -45,11 +45,11 @@ namespace Itereta.Common
                 .ToArray();
         }
 
-        public static IteretteResponseDto? MapToDto(Iterette? iterette)
+        public static RepetitionTaskResponseDto? MapToDto(RepetitionTask? iterette)
         {
             if (iterette == null) return null;
 
-            return new IteretteResponseDto
+            return new RepetitionTaskResponseDto
             {
                 Id          =   iterette.Id,
                 Prompt      =   iterette.Prompt,
@@ -57,7 +57,7 @@ namespace Itereta.Common
             };
         }
 
-        public static IteretteResponseDto[] MapToDto(IEnumerable<Iterette> iterettes)
+        public static RepetitionTaskResponseDto[] MapToDto(IEnumerable<RepetitionTask> iterettes)
         {
             return iterettes
                 .Where(e => e != null)
@@ -66,20 +66,19 @@ namespace Itereta.Common
                 .ToArray();
         }
 
-        public static RepetitionResponseDto? MapToDto(RepetitionState? state)
+        public static RepetitionStateResponseDto? MapToDto(RepetitionState? state)
         {
             if (state == null) return null;
 
-            return new RepetitionResponseDto
+            return new RepetitionStateResponseDto
             {
                 IterationInterval   = state.IterationInterval,
                 EasinessFactor      = state.EasinessFactor,
-                NextIterationAt     = state.NextIterationAt,
             };
         }
 
 
-        public static VocabularyEntry MapToEntry(VocabularyCreateDto dto, User user)
+        public static VocabularyEntry MapToEntry(VocabularyEntryCreateDto dto, User user)
         {
             return new VocabularyEntry()
             {
@@ -92,7 +91,7 @@ namespace Itereta.Common
         }
 
 
-        public static void PatchFromDto(VocabularyEntry entry, VocabularyPatchDto patchDto)
+        public static void PatchFromDto(VocabularyEntry entry, VocabularyEntryPatchDto patchDto)
         {
             // Foreign patch
             if (!string.IsNullOrWhiteSpace(patchDto.Foreign))

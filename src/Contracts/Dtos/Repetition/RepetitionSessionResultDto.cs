@@ -1,9 +1,9 @@
-﻿using Itereta.Contracts.Dtos.Vocabulary;
-using Itereta.Data.Entities;
+﻿using Itereta.Data.Entities;
+using Mnemo.Contracts.Dtos.Vocabulary;
 
-namespace Itereta.Contracts.Dtos.Iteration
+namespace Mnemo.Contracts.Dtos.Repetition
 {
-    public class IterationResultDto
+    public class RepetitionSessionResultDto
     {
         public int Correct { get; set; }
         public int Total { get; set; }
@@ -11,10 +11,10 @@ namespace Itereta.Contracts.Dtos.Iteration
         public char LetterGrade { get; set; }
         public DateTime Started { get; set; }
         public DateTime Finished { get; set; }
-        public VocabularyResponseDto[] FailedEntries { get; set; }
+        public VocabularyEntryResponseDto[] FailedEntries { get; set; }
 
 
-        public IterationResultDto(int correct, int total, VocabularyResponseDto[] failedEntries, DateTime started, DateTime finished)
+        public RepetitionSessionResultDto(int correct, int total, VocabularyEntryResponseDto[] failedEntries, DateTime started, DateTime finished)
         {
             Correct = correct;
             Total = total;

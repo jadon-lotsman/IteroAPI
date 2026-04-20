@@ -3,10 +3,10 @@ using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
-using Itereta.Services;
-using Itereta.Data.Entities;
+using Mnemo.Data.Entities;
+using Mnemo.Services;
 
-namespace Itereta.Controllers
+namespace Mnemo.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

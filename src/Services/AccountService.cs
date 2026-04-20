@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Itereta.Common;
-using Itereta.Data;
-using Itereta.Data.Entities;
 using Microsoft.EntityFrameworkCore;
+using Mnemo.Common;
+using Mnemo.Data;
+using Mnemo.Data.Entities;
 
-namespace Itereta.Services
+namespace Mnemo.Services
 {
     public class AccountService
     {

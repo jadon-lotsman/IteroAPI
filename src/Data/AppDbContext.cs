@@ -4,18 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Itereta.Data.Entities;
+using Mnemo.Data.Entities;
 
-namespace Itereta.Data
+namespace Mnemo.Data
 {
     public class AppDbContext : DbContext
     {
         public DbSet<User> Users { get; set; }
         public DbSet<VocabularyEntry> Entries { get; set; }
-        public DbSet<RepetitionState> RepetitionStates { get; set; }
 
-        public DbSet<Iteration> Iterations { get; set; }
-        public DbSet<Iterette> Iterettes { get; set; }
+        public DbSet<RepetitionSession> RepetitionSessions { get; set; }
+        public DbSet<RepetitionState> RepetitionStates { get; set; }
+        public DbSet<RepetitionTask> RepetitionTasks { get; set; }
         
 
         public AppDbContext(DbContextOptions<AppDbContext> options)

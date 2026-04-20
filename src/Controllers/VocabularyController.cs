@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Itereta.Services;
-using Itereta.Common;
-using Itereta.Contracts.Dtos.Vocabulary;
+using Mnemo.Contracts.Dtos.Vocabulary;
+using Mnemo.Services;
+using Mnemo.Common;
 
-namespace Itereta.Controllers
+namespace Mnemo.Controllers
 {
     [ApiController]
     [Authorize]
@@ -58,7 +58,7 @@ namespace Itereta.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> CreateEntry(VocabularyCreateDto dto)
+        public async Task<IActionResult> CreateEntry(VocabularyEntryCreateDto dto)
         {
             var result = await _vocabularyService.CreateEntryAsync(UserId, dto);
 
@@ -78,7 +78,7 @@ namespace Itereta.Controllers
         }
 
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> PatchEntry(int id, VocabularyPatchDto dto)
+        public async Task<IActionResult> PatchEntry(int id, VocabularyEntryPatchDto dto)
         {
             var result = await _vocabularyService.PatchEntryAsync(UserId, id, dto);
 

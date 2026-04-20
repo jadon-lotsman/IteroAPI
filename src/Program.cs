@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Itereta.Common;
 
-namespace Itereta
+namespace Mnemo
 {
     public class Program
     {

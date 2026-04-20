@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Itereta.Contracts.Dtos.Vocabulary
+namespace Mnemo.Contracts.Dtos.Vocabulary
 {
-    public class VocabularyPatchDto
+    public class VocabularyEntryPatchDto
     {
         public string? Foreign { get; set; }
         public string? Transcription { get; set; }

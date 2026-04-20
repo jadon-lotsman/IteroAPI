@@ -1,6 +1,6 @@
-﻿namespace Itereta.Contracts.Dtos.Iteration
+﻿namespace Mnemo.Contracts.Dtos.Repetition
 {
-    public class IteretteResponseDto
+    public class RepetitionTaskResponseDto
     {
         public int Id { get; set; }
         public string? Prompt { get; set; }

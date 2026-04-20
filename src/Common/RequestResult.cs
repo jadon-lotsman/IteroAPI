@@ -1,4 +1,4 @@
-﻿namespace Itereta.Common
+﻿namespace Mnemo.Common
 {
     public class RequestResult<T>
     {

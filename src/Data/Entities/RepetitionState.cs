@@ -1,4 +1,6 @@
-﻿namespace Itereta.Data.Entities
+﻿using Mnemo.Common;
+
+namespace Mnemo.Data.Entities
 {
     public class RepetitionState
     {
@@ -8,8 +10,8 @@
         public int IterationInterval { get; set; }
         public double EasinessFactor { get; set; }
         public bool CanSelfAssess { get; set; }
-        public DateTime LastIterationAt { get; set; }
-        public DateTime NextIterationAt => LastIterationAt.AddDays(IterationInterval);
+        public DateOnly LastRepetitionAt { get; set; }
+        public DateOnly NextRepetitionAt => LastRepetitionAt.AddDays(IterationInterval);
 
 
         public int UserId { get; set; }
@@ -22,7 +24,11 @@
 
         public RepetitionState(User user, VocabularyEntry entry)
         {
-            CanSelfAssess = false;
+            IterationCounter    = 0;
+            IterationInterval   = SM2Helper.MinInterval;
+            EasinessFactor      = SM2Helper.InitEF;
+            CanSelfAssess       = false;
+            LastRepetitionAt    = DateOnly.FromDateTime(DateTime.UtcNow);
 
             User = user;
             VocabularyEntry = entry;
