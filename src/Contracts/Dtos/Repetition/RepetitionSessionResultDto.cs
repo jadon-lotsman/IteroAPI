@@ -1,6 +1,6 @@
 ﻿using Mnemo.Contracts.Dtos.Vocabulary;
 
-namespace Mnemo.Contracts.Dtos.Memorization
+namespace Mnemo.Contracts.Dtos.Repetition
 {
     public class RepetitionSessionResultDto
     {

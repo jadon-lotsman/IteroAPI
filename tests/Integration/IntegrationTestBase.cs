@@ -24,9 +24,10 @@ namespace tests.Integration
             var dbName = Guid.NewGuid().ToString();
             services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase(dbName));
 
-            services.AddScoped<AccountService>();
+            services.AddScoped<AccountManagementService>();
+            services.AddScoped<RepetitionSessionService>();
+            services.AddScoped<RepetitionStateService>();
             services.AddScoped<VocabularyManagementService>();
-            services.AddScoped<VocabularyMemorizationService>();
 
             ServiceProvider = services.BuildServiceProvider();
             DbContext = ServiceProvider.GetRequiredService<AppDbContext>();

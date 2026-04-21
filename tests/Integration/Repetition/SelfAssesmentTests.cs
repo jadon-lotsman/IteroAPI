@@ -8,9 +8,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Mnemo.Common;
 using Mnemo.Services;
 
-namespace tests.Integration.Memorization
+namespace tests.Integration.Repetition
 {
-    public class SelfAssessmentTests : IntegrationTestBase
+    public class SelfAssesmentTests : IntegrationTestBase
     {
         [Fact]
         public async Task SelfAssessment_WhenAllowed_ShouldUpdateStateAndDisableFlag()
@@ -22,11 +22,11 @@ namespace tests.Integration.Memorization
             var state = DataSeeder.CreateState(id: 1, userId: user.Id, entryId: entry.Id, repetitionCounter: 2, repetitionInterval: 4, ef: SM2Helper.InitEF);
             state.CanSelfAssess = true;
 
-            var memorizationService = ServiceProvider.GetRequiredService<VocabularyMemorizationService>();
+            var stateService = ServiceProvider.GetRequiredService<RepetitionStateService>();
 
 
             // Act
-            var result = await memorizationService.SelfAssessmentRepetitionStateAsync(userId: user.Id, entryId: entry.Id, quality: 5);
+            var result = await stateService.UpdateRepetitionStateAsync(userId: user.Id, entryId: entry.Id, quality: 5, shouldIncrementCounter: false);
             
 
             // Assert
@@ -48,12 +48,12 @@ namespace tests.Integration.Memorization
             var state = DataSeeder.CreateState(id: 1, userId: user.Id, entryId: entry.Id, repetitionCounter: 2, repetitionInterval: 4, ef: SM2Helper.InitEF);
             state.CanSelfAssess = false;
 
-            var memorizationService = ServiceProvider.GetRequiredService<VocabularyMemorizationService>();
+            var stateService = ServiceProvider.GetRequiredService<RepetitionStateService>();
 
 
             // Act
-            var result = await memorizationService.SelfAssessmentRepetitionStateAsync(userId: user.Id, entryId: entry.Id, quality: 5);
-            
+            var result = await stateService.UpdateRepetitionStateAsync(userId: user.Id, entryId: entry.Id, quality: 5, shouldIncrementCounter: false);
+
 
             // Assert
             Assert.False(result.IsSuccess);

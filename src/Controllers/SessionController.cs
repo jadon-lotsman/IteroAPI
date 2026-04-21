@@ -11,21 +11,21 @@ namespace Mnemo.Controllers
     [ApiController]
     [Authorize]
     [Route("api/[controller]")]
-    public class MemorizationController : ControllerBase
+    public class SessionController : ControllerBase
     {
-        public MemorizationController(VocabularyMemorizationService service)
+        public SessionController(RepetitionSessionService sessionService)
         {
-            _memorizationService = service;
+            _sessionService = sessionService;
         }
 
         private int UserId => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-        private readonly VocabularyMemorizationService _memorizationService;
+        private readonly RepetitionSessionService _sessionService;
 
 
         [HttpGet("status")]
         public async Task<IActionResult> GetRepetitionSessionStatus()
         {
-            var result = await _memorizationService.GetRepetitionSessionStatusAsync(UserId);
+            var result = await _sessionService.GetRepetitionSessionStatusAsync(UserId);
 
             return StatusCode(500, result.ErrorCode);
         }
@@ -33,7 +33,7 @@ namespace Mnemo.Controllers
         [HttpPost("start")]
         public async Task<IActionResult> StartRepetitionSession()
         {
-            var result = await _memorizationService.StartRepetitionSessionAsync(UserId);
+            var result = await _sessionService.StartRepetitionSessionAsync(UserId);
 
             if (!result.IsSuccess)
             {
@@ -51,7 +51,7 @@ namespace Mnemo.Controllers
         [HttpPost("finish")]
         public async Task<IActionResult> FinishRepetitionSession()
         {
-            var result = await _memorizationService.FinishRepetitionSessionAsync(UserId);
+            var result = await _sessionService.FinishRepetitionSessionAsync(UserId);
 
             if (!result.IsSuccess)
             {
@@ -70,7 +70,7 @@ namespace Mnemo.Controllers
         [HttpGet("tasks")]
         public async Task<IActionResult> GetAllTasks()
         {
-            var tasks = await _memorizationService.GetAllRepetitionTasksAsync(UserId);
+            var tasks = await _sessionService.GetAllRepetitionTasksAsync(UserId);
 
             var tasksDto = Mapper.MapToDto(tasks);
             return Ok(tasksDto);
@@ -79,7 +79,7 @@ namespace Mnemo.Controllers
         [HttpGet("tasks/{id:int}")]
         public async Task<IActionResult> GetTaskById(int id)
         {
-            var task = await _memorizationService.GetRepetitionTaskByIdAsync(UserId, id);
+            var task = await _sessionService.GetRepetitionTaskByIdAsync(UserId, id);
 
             if (task == null)
                 return NotFound();
@@ -91,7 +91,7 @@ namespace Mnemo.Controllers
         [HttpPut("tasks/answer/{id:int}")]
         public async Task<IActionResult> SubmitTaskAnswer(int id, string answer)
         {
-            var result = await _memorizationService.SubmitRepetitionTaskAnswerAsync(UserId, id, answer);
+            var result = await _sessionService.SubmitRepetitionTaskAnswerAsync(UserId, id, answer);
 
             if (!result.IsSuccess)
             {
@@ -105,26 +105,6 @@ namespace Mnemo.Controllers
 
             var tasksDto = Mapper.MapToDto(result.Value);
             return Ok(tasksDto);
-        }
-
-
-        [HttpPut("repetitions/{id:int}")]
-        public async Task<IActionResult> SelfAssessmentRepetitionState(int id, double quality)
-        {
-            var result = await _memorizationService.SelfAssessmentRepetitionStateAsync(UserId, id, quality);
-
-            if (!result.IsSuccess)
-            {
-                return result.ErrorCode switch
-                {
-                    "REPETITION_STATE_NOT_FOUND" => NotFound(result.ErrorCode),
-                    "REPETITION_STATE_ASSESS_NOT_ALLOWED" => BadRequest(result.ErrorCode),
-                    _ => StatusCode(500, result.ErrorCode)
-                };
-            }
-
-            var stateDto = Mapper.MapToDto(result.Value);
-            return Ok(stateDto);
         }
     }
 }

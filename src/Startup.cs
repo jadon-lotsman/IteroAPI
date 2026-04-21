@@ -77,9 +77,10 @@ namespace Mnemo
             services.AddAuthentication();
             services.AddAuthorization();
 
-            services.AddScoped<AccountService>();
+            services.AddScoped<AccountManagementService>();
+            services.AddScoped<RepetitionSessionService>();
+            services.AddScoped<RepetitionStateService>();
             services.AddScoped<VocabularyManagementService>();
-            services.AddScoped<VocabularyMemorizationService>();
 
             services.AddControllers();
         }

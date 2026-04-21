@@ -10,12 +10,12 @@ using Mnemo.Data.Entities;
 
 namespace Mnemo.Services
 {
-    public class AccountService
+    public class AccountManagementService
     {
         private AppDbContext _context;
 
 
-        public AccountService(AppDbContext context)
+        public AccountManagementService(AppDbContext context)
         {
             _context = context;
         }

@@ -1,7 +1,7 @@
 ﻿using System.Formats.Tar;
 using System.Reflection;
 using Microsoft.IdentityModel.Tokens;
-using Mnemo.Contracts.Dtos.Memorization;
+using Mnemo.Contracts.Dtos.Repetition;
 using Mnemo.Contracts.Dtos.Vocabulary;
 using Mnemo.Data.Entities;
 

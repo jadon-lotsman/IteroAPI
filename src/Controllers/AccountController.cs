@@ -12,20 +12,20 @@ namespace Mnemo.Controllers
     [Route("api/[controller]")]
     public class AccountController : ControllerBase
     {
-        public AccountController(IConfiguration configuration, AccountService userService)
+        public AccountController(IConfiguration configuration, AccountManagementService accountService)
         {
             _configuration = configuration;
-            _userService = userService;
+            _accountService = accountService;
         }
 
         private readonly IConfiguration _configuration;
-        private readonly AccountService _userService;
+        private readonly AccountManagementService _accountService;
 
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(string username)
         {
-            var user = await _userService.GetByUsernameAsync(username);
+            var user = await _accountService.GetByUsernameAsync(username);
 
             if (user == null)
                 return Unauthorized();
@@ -37,7 +37,7 @@ namespace Mnemo.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(string username)
         {
-            var result = await _userService.CreateAsync(username);
+            var result = await _accountService.CreateAsync(username);
 
             if (!result.IsSuccess)
             {

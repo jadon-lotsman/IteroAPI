@@ -8,7 +8,7 @@ using Mnemo.Common;
 using Mnemo.Data.Entities;
 using Mnemo.Services;
 
-namespace tests.Integration.Memorization
+namespace tests.Integration.Repetition
 {
     public class StartSessionTests : IntegrationTestBase
     {
@@ -20,11 +20,11 @@ namespace tests.Integration.Memorization
             var entry1 = DataSeeder.CreateEntry(id: 7, userId: user.Id, foreign: "apple", translations: "яблоко");
             var entry2 = DataSeeder.CreateEntry(id: 8, userId: user.Id, foreign: "banana", translations: "банан");
 
-            var memorizationService = ServiceProvider.GetRequiredService<VocabularyMemorizationService>();
+            var sessionService = ServiceProvider.GetRequiredService<RepetitionSessionService>();
 
 
             // Act
-            var result = await memorizationService.StartRepetitionSessionAsync(user.Id);
+            var result = await sessionService.StartRepetitionSessionAsync(user.Id);
 
 
             // Assert
@@ -47,11 +47,11 @@ namespace tests.Integration.Memorization
             DbContext.RepetitionSessions.Add(existingSession);
             await DbContext.SaveChangesAsync();
 
-            var memorizationService = ServiceProvider.GetRequiredService<VocabularyMemorizationService>();
+            var sessionService = ServiceProvider.GetRequiredService<RepetitionSessionService>();
 
 
             // Act
-            var result = await memorizationService.StartRepetitionSessionAsync(user.Id);
+            var result = await sessionService.StartRepetitionSessionAsync(user.Id);
 
 
             // Assert

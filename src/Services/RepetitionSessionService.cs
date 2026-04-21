@@ -5,26 +5,28 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Mnemo.Common;
-using Mnemo.Contracts.Dtos.Memorization;
+using Mnemo.Contracts.Dtos.Repetition;
 using Mnemo.Data;
 using Mnemo.Data.Entities;
 
 namespace Mnemo.Services
 {
-    public class VocabularyMemorizationService
+    public class RepetitionSessionService
     {
         private AppDbContext _context;
-        private AccountService _accountService;
+        private AccountManagementService _accountService;
+        private RepetitionStateService _stateService;
         private VocabularyManagementService _vocabularyService;
 
         private static Random _random = new Random();
 
 
-        public VocabularyMemorizationService(AppDbContext context, AccountService accountService, VocabularyManagementService vocabularyService)
+        public RepetitionSessionService(AppDbContext context, AccountManagementService accountService, VocabularyManagementService vocabularyService, RepetitionStateService stateService)
         {
             _context = context;
             _accountService = accountService;
             _vocabularyService = vocabularyService;
+            _stateService = stateService;
         }
 
 
@@ -39,28 +41,22 @@ namespace Mnemo.Services
         public async Task<RepetitionSession?> GetRepetitionSessionAsync(int userId)
         {
             return await _context.RepetitionSessions
-                .Include(i => i.Tasks)
-                .FirstOrDefaultAsync(e => e.User.Id == userId);
+                .Include(s => s.Tasks)
+                .FirstOrDefaultAsync(s => s.User.Id == userId);
         }
 
         public async Task<List<RepetitionTask>> GetAllRepetitionTasksAsync(int userId)
         {
             return await _context.RepetitionTasks
-                .Where(i => i.RepetitionSession.UserId == userId)
+                .Where(t => t.RepetitionSession.UserId == userId)
                 .ToListAsync();
         }
 
         public async Task<RepetitionTask?> GetRepetitionTaskByIdAsync(int userId, int taskId)
         {
             return await _context.RepetitionTasks
-                .Include(i => i.RepetitionSession)
-                .FirstOrDefaultAsync(s => s.Id == taskId && s.RepetitionSession.UserId == userId);
-        }
-
-        public async Task<RepetitionState?> GetRepetitionStateByEntryIdAsync(int userId, int entryId)
-        {
-            return await _context.RepetitionStates
-                .FirstOrDefaultAsync(r => r.UserId == userId && r.VocabularyEntryId == entryId);
+                .Include(t => t.RepetitionSession)
+                .FirstOrDefaultAsync(t => t.Id == taskId && t.RepetitionSession.UserId == userId);
         }
 
 
@@ -80,10 +76,7 @@ namespace Mnemo.Services
                 _context.RepetitionSessions.Remove(user.RepetitionSession);
 
 
-            var entriesWithoutState = await _vocabularyService.GetAllEntriesWithoutStateAsync(userId);
-            var states = entriesWithoutState.Select(e => new RepetitionState(user, e)).ToList();
-
-            await _context.RepetitionStates.AddRangeAsync(states);
+            await _stateService.RefreshRepetitionStatesAsync(userId);
 
 
             var targetEntries = _vocabularyService.GetListOfRandomEntries(userId);
@@ -115,7 +108,7 @@ namespace Mnemo.Services
             }
 
 
-            var entriesIds = session.Tasks.Select(i => i.BaseVocabularyEntryId).ToList();
+            var entriesIds = session.Tasks.Select(t => t.BaseVocabularyEntryId).ToList();
             var entriesDict = await _vocabularyService.GetEntriesDictByIdsAsync(userId, entriesIds);
 
             int missedCount = 0;
@@ -123,12 +116,15 @@ namespace Mnemo.Services
 
             foreach (var task in session.Tasks)
             {
-                if (entriesDict.TryGetValue(task.BaseVocabularyEntryId, out var baseEntry) && baseEntry != null)
+                if (entriesDict.TryGetValue(task.BaseVocabularyEntryId, out var entry) && entry != null)
                 {
-                    var state = await AutoAssessmentRepetitionStateAsync(userId, task, baseEntry);
+                    double similarity = GetMaxAnswerSimilarity(task, entry);
+                    double quality = SM2Helper.ComputeQuality(task.RepetitionSession.AverageActionTime, task.ActionTimeSpan, task.ActionCounter, similarity);
 
-                    if (state.Value.IterationCounter == 0)
-                        failedEntries.Add(baseEntry);
+                    var state = await _stateService.UpdateRepetitionStateAsync(userId, entry.Id, quality, shouldIncrementCounter: true);
+
+                    if (SM2Helper.IsPassingQuality(quality))
+                        failedEntries.Add(entry);
                 }
                 else
                 {
@@ -174,55 +170,6 @@ namespace Mnemo.Services
             return RequestResult<RepetitionTask>.Success(task);
         }
 
-        public async Task<RequestResult<RepetitionState>> SelfAssessmentRepetitionStateAsync(int userId, int entryId, double quality)
-        {
-            var state = await GetRepetitionStateByEntryIdAsync(userId, entryId);
-
-            if (state == null)
-                return RequestResult<RepetitionState>.Failure("REPETITION_STATE_NOT_FOUND");
-
-            if (!state.CanSelfAssess)
-                return RequestResult<RepetitionState>.Failure("REPETITION_STATE_ASSESS_NOT_ALLOWED");
-
-            // Self features
-            state.CanSelfAssess    = false;
-
-            (int interval, double easinessFactor)
-                = SM2Helper.NextIntervalAndEf(state.EasinessFactor, state.IterationInterval, state.IterationCounter, quality);
-
-            state.IterationInterval = interval;
-            state.EasinessFactor    = easinessFactor;
-
-            await _context.SaveChangesAsync();
-
-            return RequestResult<RepetitionState>.Success(state);
-        }
-
-        private async Task<RequestResult<RepetitionState>> AutoAssessmentRepetitionStateAsync(int userId, RepetitionTask task, VocabularyEntry entry)
-        {
-            double similarity = GetMaxAnswerSimilarity(task, entry);
-            double quality = SM2Helper.ComputeQuality(task.RepetitionSession.AverageActionTime, task.ActionTimeSpan, task.ActionCounter, similarity);
-
-            var state = await GetRepetitionStateByEntryIdAsync(userId, entry.Id);
-
-            if (state == null)
-                return RequestResult<RepetitionState>.Failure("REPETITION_STATE_NOT_FOUND");
-
-            // Auto features
-            state.IterationCounter  = SM2Helper.IsPassingQuality(quality) ? state.IterationCounter + 1 : 0;
-            state.CanSelfAssess     = SM2Helper.IsPassingQuality(quality);
-            state.LastRepetitionAt  = DateOnly.FromDateTime(DateTime.UtcNow);
-
-            (int interval, double easinessFactor) 
-                = SM2Helper.NextIntervalAndEf(state.EasinessFactor, state.IterationInterval, state.IterationCounter, quality);
-
-            state.IterationInterval = interval;
-            state.EasinessFactor    = easinessFactor;
-
-            await _context.SaveChangesAsync();
-
-            return RequestResult<RepetitionState>.Success(state);
-        }
 
         private double GetMaxAnswerSimilarity(RepetitionTask task, VocabularyEntry entry)
         {

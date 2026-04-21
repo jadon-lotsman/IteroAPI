@@ -12,11 +12,11 @@ namespace Mnemo.Controllers
     [ApiController]
     [Authorize]
     [Route("api/[controller]")]
-    public class ManagementController : ControllerBase
+    public class VocabularyController : ControllerBase
     {
-        public ManagementController(VocabularyManagementService service)
+        public VocabularyController(VocabularyManagementService vocabularyService)
         {
-            _vocabularyService = service;
+            _vocabularyService = vocabularyService;
         }
 
         private int UserId => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));

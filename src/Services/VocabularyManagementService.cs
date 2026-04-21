@@ -12,13 +12,13 @@ namespace Mnemo.Services
     public class VocabularyManagementService
     {
         private AppDbContext _context;
-        private AccountService _accountService;
+        private AccountManagementService _accountService;
 
 
-        public VocabularyManagementService(AppDbContext context, AccountService userService)
+        public VocabularyManagementService(AppDbContext context, AccountManagementService accountService)
         {
             _context = context;
-            _accountService = userService;
+            _accountService = accountService;
         }
 
 
@@ -42,13 +42,6 @@ namespace Mnemo.Services
         public async Task<List<VocabularyEntry>> GetAllEntriesAsync(int userId)
         {
             return await GetEntriesByUserQuery(userId)
-                .ToListAsync();
-        }
-
-        public async Task<List<VocabularyEntry>> GetAllEntriesWithoutStateAsync(int userId)
-        {
-            return await GetEntriesByUserQuery(userId)
-                .Where(e => e.RepetitionState == null)
                 .ToListAsync();
         }
 
