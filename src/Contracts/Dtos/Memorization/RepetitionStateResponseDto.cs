@@ -1,4 +1,4 @@
-﻿namespace Mnemo.Contracts.Dtos.Repetition
+﻿namespace Mnemo.Contracts.Dtos.Memorization
 {
     public class RepetitionStateResponseDto
     {

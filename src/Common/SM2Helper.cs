@@ -22,7 +22,7 @@
             var ratio = averageTime / actionTime;
             double Reaction = CalcSigmoidReaction(ratio);
 
-            double Knowledge = 0.5 * Accuracy + 0.3 * Stability + 0.2 * Reaction;
+            double Knowledge = 0.6 * Accuracy + 0.2 * Stability + 0.2 * Reaction;
 
             double Quality = Knowledge * 5;
 
@@ -32,29 +32,29 @@
 
         public static (int newInterval, double newEasinessFactor) NextIntervalAndEf(double easinessFactor, int interval, int repetitionCounter, double quality)
         {
-            int newInterval;
-            double newEasinessFactor;
-
-            newEasinessFactor = easinessFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
-            newEasinessFactor = Math.Max(newEasinessFactor, MinEF);
+            double nextEasinessFactor;
+            int nextInterval;
 
             if (!IsPassingQuality(quality))
             {
-                newInterval = FirstIntervalDays;
+                nextInterval = FirstIntervalDays;
             }
             else
             {
-                newInterval = repetitionCounter switch
+                nextInterval = repetitionCounter switch
                 {
                     0 => FirstIntervalDays,
                     1 => SecondIntervalDays,
-                    _ => (int)Math.Ceiling((interval > 0 ? interval : 1) * newEasinessFactor)
+                    _ => (int) Math.Ceiling((interval > 0 ? interval : 1) * easinessFactor)
                 };
 
-                newInterval = Math.Clamp(newInterval, MinInterval, MaxInterval);
+                nextInterval = Math.Clamp(nextInterval, MinInterval, MaxInterval);
             }
 
-            return (newInterval, newEasinessFactor);
+            nextEasinessFactor = easinessFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
+            nextEasinessFactor = Math.Max(nextEasinessFactor, MinEF);
+
+            return (nextInterval, nextEasinessFactor);
         }
 
 
@@ -62,7 +62,7 @@
 
         private static double CalcFuzzyAccuracy(double similarity, double min=0.75, double max=0.9)
         {
-            if (similarity <= min)  return 0;
+            if (similarity <= min) return 0;
             if (similarity >= max) return 1;
             return (similarity - min) / (max - min);
         }

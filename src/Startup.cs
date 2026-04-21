@@ -79,7 +79,7 @@ namespace Mnemo
 
             services.AddScoped<AccountService>();
             services.AddScoped<VocabularyManagementService>();
-            services.AddScoped<VocabularyIterationService>();
+            services.AddScoped<VocabularyMemorizationService>();
 
             services.AddControllers();
         }

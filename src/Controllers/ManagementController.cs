@@ -12,9 +12,9 @@ namespace Mnemo.Controllers
     [ApiController]
     [Authorize]
     [Route("api/[controller]")]
-    public class VocabularyController : ControllerBase
+    public class ManagementController : ControllerBase
     {
-        public VocabularyController(VocabularyManagementService service)
+        public ManagementController(VocabularyManagementService service)
         {
             _vocabularyService = service;
         }

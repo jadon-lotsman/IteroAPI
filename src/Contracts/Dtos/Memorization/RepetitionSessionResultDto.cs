@@ -1,7 +1,6 @@
-﻿using Itereta.Data.Entities;
-using Mnemo.Contracts.Dtos.Vocabulary;
+﻿using Mnemo.Contracts.Dtos.Vocabulary;
 
-namespace Mnemo.Contracts.Dtos.Repetition
+namespace Mnemo.Contracts.Dtos.Memorization
 {
     public class RepetitionSessionResultDto
     {

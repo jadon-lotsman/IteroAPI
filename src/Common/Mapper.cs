@@ -1,7 +1,7 @@
 ﻿using System.Formats.Tar;
 using System.Reflection;
 using Microsoft.IdentityModel.Tokens;
-using Mnemo.Contracts.Dtos.Repetition;
+using Mnemo.Contracts.Dtos.Memorization;
 using Mnemo.Contracts.Dtos.Vocabulary;
 using Mnemo.Data.Entities;
 
@@ -45,21 +45,21 @@ namespace Mnemo.Common
                 .ToArray();
         }
 
-        public static RepetitionTaskResponseDto? MapToDto(RepetitionTask? iterette)
+        public static RepetitionTaskResponseDto? MapToDto(RepetitionTask? task)
         {
-            if (iterette == null) return null;
+            if (task == null) return null;
 
             return new RepetitionTaskResponseDto
             {
-                Id          =   iterette.Id,
-                Prompt      =   iterette.Prompt,
-                UserAnswer  =   iterette.UserAnswer
+                Id          =   task.Id,
+                Prompt      =   task.Prompt,
+                UserAnswer  =   task.UserAnswer
             };
         }
 
-        public static RepetitionTaskResponseDto[] MapToDto(IEnumerable<RepetitionTask> iterettes)
+        public static RepetitionTaskResponseDto[] MapToDto(IEnumerable<RepetitionTask> task)
         {
-            return iterettes
+            return task
                 .Where(e => e != null)
                 .Select(e => MapToDto(e)!)
                 .Distinct()

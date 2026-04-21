@@ -1,5 +1,4 @@
 ﻿using System.Security.Claims;
-using Itereta.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -12,36 +11,36 @@ namespace Mnemo.Controllers
     [ApiController]
     [Authorize]
     [Route("api/[controller]")]
-    public class IterationController : ControllerBase
+    public class MemorizationController : ControllerBase
     {
-        public IterationController(VocabularyIterationService service)
+        public MemorizationController(VocabularyMemorizationService service)
         {
-            _iterationService = service;
+            _memorizationService = service;
         }
 
         private int UserId => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-        private readonly VocabularyIterationService _iterationService;
+        private readonly VocabularyMemorizationService _memorizationService;
 
 
         [HttpGet("status")]
-        public async Task<IActionResult> GetIterationStatus()
+        public async Task<IActionResult> GetRepetitionSessionStatus()
         {
-            var result = await _iterationService.GetIterationStatusAsync(UserId);
+            var result = await _memorizationService.GetRepetitionSessionStatusAsync(UserId);
 
             return StatusCode(500, result.ErrorCode);
         }
 
         [HttpPost("start")]
-        public async Task<IActionResult> StartIteration()
+        public async Task<IActionResult> StartRepetitionSession()
         {
-            var result = await _iterationService.StartIterationAsync(UserId);
+            var result = await _memorizationService.StartRepetitionSessionAsync(UserId);
 
             if (!result.IsSuccess)
             {
                 return result.ErrorCode switch
                 {
                     "USER_NOT_FOUND" => NotFound(result.ErrorCode),
-                    "ITERATION_NOT_FINISHED" => Conflict(result.ErrorCode),
+                    "SESSION_NOT_FINISHED" => Conflict(result.ErrorCode),
                     _ => StatusCode(500, result.ErrorCode)
                 };
             }
@@ -50,16 +49,16 @@ namespace Mnemo.Controllers
         }
 
         [HttpPost("finish")]
-        public async Task<IActionResult> FinishIteration()
+        public async Task<IActionResult> FinishRepetitionSession()
         {
-            var result = await _iterationService.FinishIterationAsync(UserId);
+            var result = await _memorizationService.FinishRepetitionSessionAsync(UserId);
 
             if (!result.IsSuccess)
             {
                 return result.ErrorCode switch
                 {
-                    "ITERATION_NOT_FOUND" => NotFound(result.ErrorCode),
-                    "ITERATION_HAS_NO_ITERETTES" => BadRequest(result.ErrorCode),
+                    "SESSION_NOT_FOUND" => NotFound(result.ErrorCode),
+                    "SESSION_HAS_NO_TASKS" => BadRequest(result.ErrorCode),
                     _ => StatusCode(500, result.ErrorCode)
                 };
             }
@@ -68,51 +67,51 @@ namespace Mnemo.Controllers
         }
 
 
-        [HttpGet("iterettes")]
-        public async Task<IActionResult> GetAllIterettes()
+        [HttpGet("tasks")]
+        public async Task<IActionResult> GetAllTasks()
         {
-            var iterettes = await _iterationService.GetAllIterettesAsync(UserId);
+            var tasks = await _memorizationService.GetAllRepetitionTasksAsync(UserId);
 
-            var iterettesDto = Mapper.MapToDto(iterettes);
-            return Ok(iterettesDto);
+            var tasksDto = Mapper.MapToDto(tasks);
+            return Ok(tasksDto);
         }
 
-        [HttpGet("iterettes/{id:int}")]
-        public async Task<IActionResult> GetIteretteById(int id)
+        [HttpGet("tasks/{id:int}")]
+        public async Task<IActionResult> GetTaskById(int id)
         {
-            var iterette = await _iterationService.GetIteretteByIdAsync(UserId, id);
+            var task = await _memorizationService.GetRepetitionTaskByIdAsync(UserId, id);
 
-            if (iterette == null)
+            if (task == null)
                 return NotFound();
 
-            var iterettesDto = Mapper.MapToDto(iterette);
-            return Ok(iterettesDto);
+            var tasksDto = Mapper.MapToDto(task);
+            return Ok(tasksDto);
         }
 
-        [HttpPut("iterettes/answer/{id:int}")]
-        public async Task<IActionResult> SubmitIteretteAnswer(int id, string answer)
+        [HttpPut("tasks/answer/{id:int}")]
+        public async Task<IActionResult> SubmitTaskAnswer(int id, string answer)
         {
-            var result = await _iterationService.SubmitIteretteAnswerAsync(UserId, id, answer);
+            var result = await _memorizationService.SubmitRepetitionTaskAnswerAsync(UserId, id, answer);
 
             if (!result.IsSuccess)
             {
                 return result.ErrorCode switch
                 {
-                    "ITERETTE_NOT_FOUND" => NotFound(result.ErrorCode),
-                    "ITERATION_WAS_FINISHED" => BadRequest(result.ErrorCode),
+                    "TASK_NOT_FOUND" => NotFound(result.ErrorCode),
+                    "SESSION_WAS_FINISHED" => BadRequest(result.ErrorCode),
                     _ => StatusCode(500, result.ErrorCode)
                 };
             }
 
-            var iteretteDto = Mapper.MapToDto(result.Value);
-            return Ok(iteretteDto);
+            var tasksDto = Mapper.MapToDto(result.Value);
+            return Ok(tasksDto);
         }
 
 
         [HttpPut("repetitions/{id:int}")]
         public async Task<IActionResult> SelfAssessmentRepetitionState(int id, double quality)
         {
-            var result = await _iterationService.SelfAssessmentAsync(UserId, id, quality);
+            var result = await _memorizationService.SelfAssessmentRepetitionStateAsync(UserId, id, quality);
 
             if (!result.IsSuccess)
             {
