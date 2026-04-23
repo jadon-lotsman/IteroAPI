@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Mnemo.Contracts.Dtos.Vocabulary
+namespace Mnemo.Contracts.Dtos.Vocabulary.Requests
 {
-    public class VocabularyEntryPatchDto
+    public class PatchVocabularyEntryRequest
     {
         public string? Foreign { get; set; }
         public string? Transcription { get; set; }

@@ -1,6 +1,6 @@
 ﻿namespace Mnemo.Contracts.Dtos.Repetition
 {
-    public class RepetitionTaskResponseDto
+    public class RepetitionTaskResponse
     {
         public int Id { get; set; }
         public string? Prompt { get; set; }

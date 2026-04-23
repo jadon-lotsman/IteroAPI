@@ -3,16 +3,16 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Mnemo.Contracts.Dtos.Vocabulary;
 using Mnemo.Services;
 using Mnemo.Common;
 using Mnemo.Services.Queries;
+using Mnemo.Contracts.Dtos.Vocabulary.Requests;
 
 namespace Mnemo.Controllers
 {
     [ApiController]
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("api/[controller]/entries")]
     public class VocabularyController : ControllerBase
     {
         private readonly VocabularyQueries _vocabularyQueries;
@@ -26,6 +26,7 @@ namespace Mnemo.Controllers
         }
 
         private int UserId => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
 
 
         [HttpGet]
@@ -49,10 +50,10 @@ namespace Mnemo.Controllers
             return Ok(entryDto);
         }
 
-        [HttpGet("{key}")]
-        public async Task<IActionResult> GetEntryByKey(string key)
+        [HttpGet("find")]
+        public async Task<IActionResult> GetEntryByKey([FromQuery] string foreign)
         {
-            var entry = await _vocabularyQueries.GetByForeignAsync(UserId, key);
+            var entry = await _vocabularyQueries.GetByForeignAsync(UserId, foreign);
 
             if (entry == null)
                 return NotFound();
@@ -63,7 +64,7 @@ namespace Mnemo.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> CreateEntry(VocabularyEntryCreateDto dto)
+        public async Task<IActionResult> CreateEntry([FromBody] CreateVocabularyEntryRequest dto)
         {
             var result = await _vocabularyService.CreateEntryAsync(UserId, dto);
 
@@ -82,8 +83,8 @@ namespace Mnemo.Controllers
             return Ok(entryDto);
         }
 
-        [HttpPut("{id:int}")]
-        public async Task<IActionResult> PatchEntry(int id, VocabularyEntryPatchDto dto)
+        [HttpPatch("{id:int}")]
+        public async Task<IActionResult> PatchEntry(int id, [FromBody] PatchVocabularyEntryRequest dto)
         {
             var result = await _vocabularyService.PatchEntryAsync(UserId, id, dto);
 

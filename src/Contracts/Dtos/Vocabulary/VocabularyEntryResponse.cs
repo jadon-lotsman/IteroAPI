@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Mnemo.Contracts.Dtos.Vocabulary
 {
-    public class VocabularyEntryResponseDto
+    public class VocabularyEntryResponse
     {
         public int Id { get; set; }
         public string? Foreign { get; set; }

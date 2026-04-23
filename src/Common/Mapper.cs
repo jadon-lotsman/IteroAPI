@@ -3,18 +3,19 @@ using System.Reflection;
 using Microsoft.IdentityModel.Tokens;
 using Mnemo.Contracts.Dtos.Repetition;
 using Mnemo.Contracts.Dtos.Vocabulary;
+using Mnemo.Contracts.Dtos.Vocabulary.Requests;
 using Mnemo.Data.Entities;
 
 namespace Mnemo.Common
 {
     public static class Mapper
     {
-        public static bool ValidDto(VocabularyEntryCreateDto? dto)
+        public static bool ValidDto(CreateVocabularyEntryRequest? dto)
         {
             return dto != null && dto.Foreign != string.Empty && dto.Translations != null && dto.Translations.Any(t => !string.IsNullOrWhiteSpace(t));
         }
 
-        public static bool ValidDto(VocabularyEntryPatchDto? dto)
+        public static bool ValidDto(PatchVocabularyEntryRequest? dto)
         {
             if (dto == null) return false;
             var properties = dto.GetType().GetProperties();
@@ -22,11 +23,11 @@ namespace Mnemo.Common
         }
 
 
-        public static VocabularyEntryResponseDto? MapToDto(VocabularyEntry? entry)
+        public static VocabularyEntryResponse? MapToDto(VocabularyEntry? entry)
         {
             if (entry == null) return null;
 
-            return new VocabularyEntryResponseDto
+            return new VocabularyEntryResponse
             {
                 Id              =   entry.Id,
                 Foreign         =   PrepareForeign(entry.Foreign),
@@ -36,7 +37,7 @@ namespace Mnemo.Common
             };
         }
 
-        public static VocabularyEntryResponseDto[] MapToDto(IEnumerable<VocabularyEntry> entries)
+        public static VocabularyEntryResponse[] MapToDto(IEnumerable<VocabularyEntry> entries)
         {
             return entries
                 .Where(e => e != null)
@@ -45,26 +46,26 @@ namespace Mnemo.Common
                 .ToArray();
         }
 
-        public static RepetitionResultDto? MapToDto(RepetitionResult? result)
+        public static RepetitionResultResponse? MapToDto(RepetitionResult? result)
         {
             if (result == null) return null;
 
-            return new RepetitionResultDto
+            return new RepetitionResultResponse
             {
                 Correct = result.Correct,
                 Total   = result.Total,
                 Percent = result.Percent,
                 StartedAt = result.StartedAt,
                 FinishedAt = result.FinishedAt,
-                VocabularyEntries = MapToDto(result.VocabularyEntries).ToList()
+                VocabularyEntries = MapToDto(result.VocabularyEntries)
             };
         }
 
-        public static RepetitionTaskResponseDto? MapToDto(RepetitionTask? task)
+        public static RepetitionTaskResponse? MapToDto(RepetitionTask? task)
         {
             if (task == null) return null;
 
-            return new RepetitionTaskResponseDto
+            return new RepetitionTaskResponse
             {
                 Id          =   task.Id,
                 Prompt      =   task.Prompt,
@@ -72,7 +73,7 @@ namespace Mnemo.Common
             };
         }
 
-        public static RepetitionTaskResponseDto[] MapToDto(IEnumerable<RepetitionTask> task)
+        public static RepetitionTaskResponse[] MapToDto(IEnumerable<RepetitionTask> task)
         {
             return task
                 .Where(e => e != null)
@@ -81,11 +82,11 @@ namespace Mnemo.Common
                 .ToArray();
         }
 
-        public static RepetitionStateResponseDto? MapToDto(RepetitionState? state)
+        public static RepetitionStateResponse? MapToDto(RepetitionState? state)
         {
             if (state == null) return null;
 
-            return new RepetitionStateResponseDto
+            return new RepetitionStateResponse
             {
                 IterationInterval   = state.IterationInterval,
                 EasinessFactor      = state.EasinessFactor,
@@ -93,7 +94,7 @@ namespace Mnemo.Common
         }
 
 
-        public static VocabularyEntry MapToEntry(VocabularyEntryCreateDto dto, int userId)
+        public static VocabularyEntry MapToEntry(CreateVocabularyEntryRequest dto, int userId)
         {
             return new VocabularyEntry()
             {
@@ -106,7 +107,7 @@ namespace Mnemo.Common
         }
 
 
-        public static void PatchFromDto(VocabularyEntry entry, VocabularyEntryPatchDto patchDto)
+        public static void PatchFromDto(VocabularyEntry entry, PatchVocabularyEntryRequest patchDto)
         {
             // Foreign patch
             if (!string.IsNullOrWhiteSpace(patchDto.Foreign))

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Mnemo.Common;
+using Mnemo.Contracts.Dtos.Repetition.Requests;
 using Mnemo.Services;
 using Mnemo.Services.Queries;
 
@@ -27,10 +28,10 @@ namespace Mnemo.Controllers
 
 
         
-        [HttpPut("{id:int}")]
-        public async Task<IActionResult> SelfAssessmentRepetitionState(int id, double quality)
+        [HttpPost("{id:int}/assess")]
+        public async Task<IActionResult> SelfAssessmentRepetitionState(int id, [FromBody] QualityAssessmentRequest request)
         {
-            var result = await _stateService.UpdateRepetitionStateAsync(UserId, id, quality, shouldIncrementCounter: false);
+            var result = await _stateService.UpdateRepetitionStateAsync(UserId, id, request.Quality, shouldIncrementCounter: false);
 
             if (!result.IsSuccess)
             {

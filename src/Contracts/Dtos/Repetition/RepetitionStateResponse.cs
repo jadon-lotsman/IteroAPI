@@ -1,6 +1,6 @@
 ﻿namespace Mnemo.Contracts.Dtos.Repetition
 {
-    public class RepetitionStateResponseDto
+    public class RepetitionStateResponse
     {
         public int IterationCounter { get; set; }
         public int IterationInterval { get; set; }

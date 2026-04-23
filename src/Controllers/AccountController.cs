@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Mnemo.Data.Entities;
 using Mnemo.Services;
 using Mnemo.Services.Queries;
+using Mnemo.Contracts.Dtos.Account.Requests;
 
 namespace Mnemo.Controllers
 {
@@ -26,10 +27,11 @@ namespace Mnemo.Controllers
         private readonly IConfiguration _configuration;
 
 
+
         [HttpPost("login")]
-        public async Task<IActionResult> Login(string username)
+        public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
         {
-            var user = await _accountQueries.GetByUsernameAsync(username);
+            var user = await _accountQueries.GetByUsernameAsync(request.Username);
 
             if (user == null)
                 return Unauthorized();
@@ -39,9 +41,9 @@ namespace Mnemo.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(string username)
+        public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)
         {
-            var result = await _accountService.CreateAsync(username);
+            var result = await _accountService.CreateAsync(request.Username);
 
             if (!result.IsSuccess)
             {
@@ -53,7 +55,7 @@ namespace Mnemo.Controllers
                 };
             }
 
-            return Ok();
+            return Created();
         }
 
 

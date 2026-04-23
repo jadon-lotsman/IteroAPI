@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Mnemo.Common;
+using Mnemo.Contracts.Dtos.Repetition;
+using Mnemo.Contracts.Dtos.Repetition.Requests;
 using Mnemo.Services;
 using Mnemo.Services.Queries;
 
@@ -26,7 +28,8 @@ namespace Mnemo.Controllers
         private int UserId => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
 
-        [HttpGet("status")]
+
+        [HttpGet]
         public async Task<IActionResult> GetRepetitionSessionStatus()
         {
             var result = await _sessionService.GetRepetitionSessionStatusAsync(UserId);
@@ -34,7 +37,7 @@ namespace Mnemo.Controllers
             return StatusCode(500, result.ErrorCode);
         }
 
-        [HttpPost("start")]
+        [HttpPost]
         public async Task<IActionResult> StartRepetitionSession()
         {
             var result = await _sessionService.StartRepetitionSessionAsync(UserId);
@@ -52,7 +55,7 @@ namespace Mnemo.Controllers
             return Ok();
         }
 
-        [HttpPost("finish")]
+        [HttpDelete]
         public async Task<IActionResult> FinishRepetitionSession()
         {
             var result = await _sessionService.FinishRepetitionSessionAsync(UserId);
@@ -70,6 +73,7 @@ namespace Mnemo.Controllers
             var resultDto = Mapper.MapToDto(result.Value);
             return Ok(resultDto);
         }
+
 
 
         [HttpGet("tasks")]
@@ -93,10 +97,10 @@ namespace Mnemo.Controllers
             return Ok(tasksDto);
         }
 
-        [HttpPut("tasks/answer/{id:int}")]
-        public async Task<IActionResult> SubmitTaskAnswer(int id, string answer)
+        [HttpPost("tasks/{id:int}/answer")]
+        public async Task<IActionResult> SubmitTaskAnswer(int id, [FromBody] SubmitTaskAnswerRequest request)
         {
-            var result = await _sessionService.SubmitRepetitionTaskAnswerAsync(UserId, id, answer);
+            var result = await _sessionService.SubmitRepetitionTaskAnswerAsync(UserId, id, request.Answer);
 
             if (!result.IsSuccess)
             {

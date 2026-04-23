@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using Mnemo.Common;
-using Mnemo.Contracts.Dtos.Vocabulary;
+using Mnemo.Contracts.Dtos.Vocabulary.Requests;
 using Mnemo.Data;
 using Mnemo.Data.Entities;
 using Mnemo.Services.Queries;
@@ -26,7 +26,7 @@ namespace Mnemo.Services
 
 
 
-        public async Task<RequestResult<VocabularyEntry>> CreateEntryAsync(int userId, VocabularyEntryCreateDto dto)
+        public async Task<RequestResult<VocabularyEntry>> CreateEntryAsync(int userId, CreateVocabularyEntryRequest dto)
         {
             if (!Mapper.ValidDto(dto))
                 return RequestResult<VocabularyEntry>.Failure("INVALID_DATA");
@@ -49,7 +49,7 @@ namespace Mnemo.Services
             return RequestResult<VocabularyEntry>.Success(entry);
         }
 
-        public async Task<RequestResult<VocabularyEntry>> PatchEntryAsync(int userId, int entryId, VocabularyEntryPatchDto patchDto)
+        public async Task<RequestResult<VocabularyEntry>> PatchEntryAsync(int userId, int entryId, PatchVocabularyEntryRequest patchDto)
         {
             if (!Mapper.ValidDto(patchDto))
                 return RequestResult<VocabularyEntry>.Failure("INVALID_DATA");
