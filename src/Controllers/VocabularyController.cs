@@ -72,10 +72,10 @@ namespace Mnemo.Controllers
             {
                 return result.ErrorCode switch
                 {
-                    "INVALID_DATA" => BadRequest(result.ErrorCode),
-                    "USER_NOT_FOUND" => NotFound(result.ErrorCode),
-                    "DUPLICATE_ENTRY" => Conflict(result.ErrorCode),
-                    _ => StatusCode(500, result.ErrorCode)
+                    ErrorCode.InvalidData => BadRequest(result.ErrorMessage),
+                    ErrorCode.UserNotFound => NotFound(result.ErrorMessage),
+                    ErrorCode.DuplicateEntry => Conflict(result.ErrorCode),
+                    _ => StatusCode(500, result.ErrorMessage)
                 };
             }
 
@@ -92,9 +92,9 @@ namespace Mnemo.Controllers
             {
                 return result.ErrorCode switch
                 {
-                    "INVALID_DATA" => BadRequest(result.ErrorCode),
-                    "ENTRY_NOT_FOUND" => NotFound(result.ErrorCode),
-                    _ => StatusCode(500, result.ErrorCode)
+                    ErrorCode.InvalidData => BadRequest(result.ErrorMessage),
+                    ErrorCode.EntryNotFound => NotFound(result.ErrorMessage),
+                    _ => StatusCode(500, result.ErrorMessage)
                 };
             }
 
@@ -111,8 +111,8 @@ namespace Mnemo.Controllers
             {
                 return result.ErrorCode switch
                 {
-                    "ENTRY_NOT_FOUND" => NotFound(result.ErrorCode),
-                    _ => StatusCode(500, result.ErrorCode)
+                    ErrorCode.EntryNotFound => NotFound(result.ErrorMessage),
+                    _ => StatusCode(500, result.ErrorMessage)
                 };
             }
 

@@ -7,6 +7,7 @@ using Mnemo.Data.Entities;
 using Mnemo.Services;
 using Mnemo.Services.Queries;
 using Mnemo.Contracts.Dtos.Account.Requests;
+using Mnemo.Common;
 
 namespace Mnemo.Controllers
 {
@@ -49,9 +50,9 @@ namespace Mnemo.Controllers
             {
                 return result.ErrorCode switch
                 {
-                    "USERNAME_TAKEN" => Conflict(result.ErrorCode),
-                    "INVALID_PASSWORD" => BadRequest(result.ErrorCode),
-                    _ => StatusCode(500, result.ErrorCode)
+                    ErrorCode.UsernameTaken => Conflict(result.ErrorMessage),
+                    ErrorCode.InvalidPassword => BadRequest(result.ErrorMessage),
+                    _ => StatusCode(500, result.ErrorMessage)
                 };
             }
 

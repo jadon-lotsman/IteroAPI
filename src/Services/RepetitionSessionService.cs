@@ -43,13 +43,12 @@ namespace Mnemo.Services
         public async Task<RequestResult<RepetitionSession>> GetRepetitionSessionStatusAsync(int userId)
         {
             if (!await _accountQueries.ExistsByIdAsync(userId))
-                return RequestResult<RepetitionSession>.Failure("USER_NOT_FOUND");
+                return RequestResult<RepetitionSession>.Failure(ErrorCode.UserNotFound);
 
             var session = await _sessionQueries.GetByUserIdAsync(userId);
 
-            if (session == null)    return RequestResult<RepetitionSession>.Failure("SESSION_NOT_FOUND");
-            if (session.IsFinished) return RequestResult<RepetitionSession>.Failure("SESSION_WAS_FINISHED");
-            else return RequestResult<RepetitionSession>.Failure("SESSION_IN_PROCESS");
+            if (session == null)    return RequestResult<RepetitionSession>.Failure(ErrorCode.SessionNotFound);
+            else return RequestResult<RepetitionSession>.Failure(ErrorCode.SessionNotFinished);
         }
 
 
@@ -57,10 +56,10 @@ namespace Mnemo.Services
         public async Task<RequestResult<RepetitionSession>> StartRepetitionSessionAsync(int userId)
         {
             if (!await _accountQueries.ExistsByIdAsync(userId))
-                return RequestResult<RepetitionSession>.Failure("USER_NOT_FOUND");
+                return RequestResult<RepetitionSession>.Failure(ErrorCode.UserNotFound);
 
             if (await _sessionQueries.ExistsByUserId(userId))
-                return RequestResult<RepetitionSession>.Failure("SESSION_NOT_FINISHED");
+                return RequestResult<RepetitionSession>.Failure(ErrorCode.SessionNotFinished);
 
 
             await _stateService.RefreshRepetitionStatesAsync(userId);
@@ -82,13 +81,13 @@ namespace Mnemo.Services
             var session = await _sessionQueries.GetByUserIdAsync(userId);
 
             if (session == null)
-                return RequestResult<RepetitionResult>.Failure("SESSION_NOT_FOUND");
+                return RequestResult<RepetitionResult>.Failure(ErrorCode.SessionNotFound);
 
 
             var tasks = await _sessionQueries.GetTasksByUserIdAsync(userId);
 
-            if (tasks.Count == 0)
-                return RequestResult<RepetitionResult>.Failure("SESSION_HAS_NO_TASKS");
+            //if (tasks.Count == 0)
+            //    return ServiceResult<RepetitionResult>.Failure(ServiceErrorCode.SessionNoTasks);
 
 
             session.FinishedAt = DateTime.UtcNow;
@@ -111,10 +110,7 @@ namespace Mnemo.Services
             var task = await _sessionQueries.GetTaskByIdAsync(userId, taskId);
 
             if (task == null)
-                return RequestResult<RepetitionTask>.Failure("TASK_NOT_FOUND");
-
-            if (task.RepetitionSession.IsFinished)
-                return RequestResult<RepetitionTask>.Failure("SESSION_WAS_FINISHED");
+                return RequestResult<RepetitionTask>.Failure(ErrorCode.TaskNotFound);
 
 
             var currentTime     = DateTime.UtcNow;

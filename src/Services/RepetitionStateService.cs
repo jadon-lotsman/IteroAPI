@@ -40,7 +40,7 @@ namespace Mnemo.Services
             var state = await _stateQueries.GetByEntryIdAsync(userId, entryId);
 
             if (state == null)
-                return RequestResult<RepetitionState>.Failure("REPETITION_STATE_NOT_FOUND");
+                return RequestResult<RepetitionState>.Failure(ErrorCode.StateNotFound);
 
 
             if (shouldIncrementCounter)
@@ -52,7 +52,7 @@ namespace Mnemo.Services
             else
             {
                 if (!state.CanSelfAssess)
-                    return RequestResult<RepetitionState>.Failure("REPETITION_STATE_ASSESS_NOT_ALLOWED");
+                    return RequestResult<RepetitionState>.Failure(ErrorCode.ActionNotAllowed);
 
                 state.CanSelfAssess = false;
             }

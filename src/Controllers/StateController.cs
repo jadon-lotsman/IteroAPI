@@ -37,9 +37,9 @@ namespace Mnemo.Controllers
             {
                 return result.ErrorCode switch
                 {
-                    "REPETITION_STATE_NOT_FOUND" => NotFound(result.ErrorCode),
-                    "REPETITION_STATE_ASSESS_NOT_ALLOWED" => BadRequest(result.ErrorCode),
-                    _ => StatusCode(500, result.ErrorCode)
+                    ErrorCode.TaskNotFound => NotFound(result.ErrorMessage),
+                    ErrorCode.ActionNotAllowed => BadRequest(result.ErrorMessage),
+                    _ => StatusCode(500, result.ErrorMessage)
                 };
             }
 

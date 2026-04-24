@@ -56,7 +56,7 @@ namespace tests.Integration.Repetition
 
             // Assert
             Assert.False(result.IsSuccess);
-            Assert.Equal("SESSION_NOT_FINISHED", result.ErrorCode);
+            Assert.Equal(ErrorCode.SessionNotFinished, result.ErrorCode);
         }
     }
 }

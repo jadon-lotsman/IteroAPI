@@ -34,7 +34,7 @@ namespace Mnemo.Controllers
         {
             var result = await _sessionService.GetRepetitionSessionStatusAsync(UserId);
 
-            return StatusCode(500, result.ErrorCode);
+            return StatusCode(500, result.ErrorMessage);
         }
 
         [HttpPost]
@@ -46,9 +46,9 @@ namespace Mnemo.Controllers
             {
                 return result.ErrorCode switch
                 {
-                    "USER_NOT_FOUND" => NotFound(result.ErrorCode),
-                    "SESSION_NOT_FINISHED" => Conflict(result.ErrorCode),
-                    _ => StatusCode(500, result.ErrorCode)
+                    ErrorCode.UserNotFound => NotFound(result.ErrorMessage),
+                    ErrorCode.SessionNotFinished => BadRequest(result.ErrorMessage),
+                    _ => StatusCode(500, result.ErrorMessage)
                 };
             }
 
@@ -64,9 +64,8 @@ namespace Mnemo.Controllers
             {
                 return result.ErrorCode switch
                 {
-                    "SESSION_NOT_FOUND" => NotFound(result.ErrorCode),
-                    "SESSION_HAS_NO_TASKS" => BadRequest(result.ErrorCode),
-                    _ => StatusCode(500, result.ErrorCode)
+                    ErrorCode.SessionNotFound => NotFound(result.ErrorMessage),
+                    _ => StatusCode(500, result.ErrorMessage)
                 };
             }
 
@@ -106,9 +105,8 @@ namespace Mnemo.Controllers
             {
                 return result.ErrorCode switch
                 {
-                    "TASK_NOT_FOUND" => NotFound(result.ErrorCode),
-                    "SESSION_WAS_FINISHED" => BadRequest(result.ErrorCode),
-                    _ => StatusCode(500, result.ErrorCode)
+                    ErrorCode.TaskNotFound => NotFound(result.ErrorMessage),
+                    _ => StatusCode(500, result.ErrorMessage)
                 };
             }
 

@@ -29,16 +29,16 @@ namespace Mnemo.Services
         public async Task<RequestResult<VocabularyEntry>> CreateEntryAsync(int userId, CreateVocabularyEntryRequest dto)
         {
             if (!Mapper.ValidDto(dto))
-                return RequestResult<VocabularyEntry>.Failure("INVALID_DATA");
+                return RequestResult<VocabularyEntry>.Failure(ErrorCode.InvalidData);
 
             if (!await _accountQueries.ExistsByIdAsync(userId))
-                return RequestResult<VocabularyEntry>.Failure("USER_NOT_FOUND");
+                return RequestResult<VocabularyEntry>.Failure(ErrorCode.UserNotFound);
 
 
             string foreign = Mapper.PrepareForeign(dto.Foreign!);
 
             if (await _vocabularyQueries.ExistsByForeignAsync(userId, foreign))
-                return RequestResult<VocabularyEntry>.Failure("DUPLICATE_ENTRY");
+                return RequestResult<VocabularyEntry>.Failure(ErrorCode.DuplicateEntry);
 
 
             var entry = Mapper.MapToEntry(dto, userId);
@@ -52,13 +52,13 @@ namespace Mnemo.Services
         public async Task<RequestResult<VocabularyEntry>> PatchEntryAsync(int userId, int entryId, PatchVocabularyEntryRequest patchDto)
         {
             if (!Mapper.ValidDto(patchDto))
-                return RequestResult<VocabularyEntry>.Failure("INVALID_DATA");
+                return RequestResult<VocabularyEntry>.Failure(ErrorCode.InvalidData);
 
 
             var currentEntry = await _vocabularyQueries.GetByIdAsync(userId, entryId);
 
             if (currentEntry == null)
-                return RequestResult<VocabularyEntry>.Failure("ENTRY_NOT_FOUND");
+                return RequestResult<VocabularyEntry>.Failure(ErrorCode.EntryNotFound);
 
 
             Mapper.PatchFromDto(currentEntry, patchDto);
@@ -73,7 +73,7 @@ namespace Mnemo.Services
             var currentEntry = await _vocabularyQueries.GetByIdAsync(userId, entryId);
 
             if (currentEntry == null)
-                return RequestResult<bool>.Failure("ENTRY_NOT_FOUND");
+                return RequestResult<bool>.Failure(ErrorCode.EntryNotFound);
                 
 
             _context.Entries.Remove(currentEntry);

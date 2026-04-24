@@ -29,7 +29,7 @@ namespace Mnemo.Services
         public async Task<RequestResult<bool>> CreateAsync(string username)
         {
             if (await _accountQueries.ExistsByUsernameAsync(username))
-                return RequestResult<bool>.Failure("USERNAME_TAKEN");
+                return RequestResult<bool>.Failure(ErrorCode.UsernameTaken);
 
             //if (string.IsNullOrWhiteSpace(password))
             //    return RequestResult<bool>.Failure("INVALID_PASSWORD");
