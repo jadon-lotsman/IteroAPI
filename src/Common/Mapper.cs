@@ -88,9 +88,23 @@ namespace Mnemo.Common
 
             return new RepetitionStateResponse
             {
-                IterationInterval   = state.IterationInterval,
+                Id                  = state.Id,
+                RepetitionCounter   = state.RepetitionCounter,
+                RepetitionInterval  = state.RepetitionInterval,
                 EasinessFactor      = state.EasinessFactor,
+                CanSelfAssess       = state.CanSelfAssess,
+                NextRepetitionAt    = state.NextRepetitionAt,
+                VocabularyEntry     = MapToDto(state.VocabularyEntry)
             };
+        }
+
+        public static RepetitionStateResponse[] MapToDto(IEnumerable<RepetitionState> states)
+        {
+            return states
+                .Where(e => e != null)
+                .Select(e => MapToDto(e)!)
+                .Distinct()
+                .ToArray();
         }
 
 

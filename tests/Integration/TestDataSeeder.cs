@@ -57,8 +57,8 @@ namespace tests.Integration
             var state = new RepetitionState()
             {
                 Id = id,
-                IterationCounter = repetitionCounter,
-                IterationInterval = repetitionInterval,
+                RepetitionCounter = repetitionCounter,
+                RepetitionInterval = repetitionInterval,
                 EasinessFactor = ef,
                 CanSelfAssess = canSelfAssess,
                 LastRepetitionAt = DateOnly.FromDateTime(DateTime.UtcNow),

@@ -25,6 +25,7 @@ namespace Mnemo.Services.Queries
 
         public async Task<List<RepetitionState>> GetAllByUserIdAsync(int userId)
             => await GetByUserIdQuery(userId)
+            .OrderBy(s => s.LastRepetitionAt.AddDays(s.RepetitionInterval))
             .ToListAsync();
 
 

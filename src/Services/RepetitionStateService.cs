@@ -45,7 +45,7 @@ namespace Mnemo.Services
 
             if (shouldIncrementCounter)
             {
-                state.IterationCounter = SM2Helper.IsPassingQuality(quality) ? state.IterationCounter + 1 : 0;
+                state.RepetitionCounter = SM2Helper.IsPassingQuality(quality) ? state.RepetitionCounter + 1 : 0;
                 state.CanSelfAssess = SM2Helper.IsPassingQuality(quality);
                 state.LastRepetitionAt = DateOnly.FromDateTime(DateTime.UtcNow);
             }
@@ -59,9 +59,9 @@ namespace Mnemo.Services
 
 
             (int interval, double easinessFactor)
-                = SM2Helper.NextIntervalAndEf(state.EasinessFactor, state.IterationInterval, state.IterationCounter, quality);
+                = SM2Helper.NextIntervalAndEf(state.EasinessFactor, state.RepetitionInterval, state.RepetitionCounter, quality);
 
-            state.IterationInterval = interval;
+            state.RepetitionInterval = interval;
             state.EasinessFactor = easinessFactor;
 
 

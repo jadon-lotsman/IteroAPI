@@ -31,10 +31,10 @@ namespace tests.Integration.Repetition
             Assert.True(result.IsSuccess);
             var updatedState = result.Value!;
 
-            Assert.Equal(3, state.IterationCounter);
+            Assert.Equal(3, state.RepetitionCounter);
             Assert.True(updatedState.CanSelfAssess);
             Assert.True(updatedState.EasinessFactor > SM2Helper.InitEF);
-            Assert.True(updatedState.IterationInterval > 4);
+            Assert.True(updatedState.RepetitionInterval > 4);
         }
 
         [Fact]
@@ -59,7 +59,7 @@ namespace tests.Integration.Repetition
 
             Assert.False(updatedState.CanSelfAssess);
             Assert.True(updatedState.EasinessFactor > SM2Helper.InitEF);
-            Assert.True(updatedState.IterationInterval > 4);
+            Assert.True(updatedState.RepetitionInterval > 4);
         }
 
         [Fact]

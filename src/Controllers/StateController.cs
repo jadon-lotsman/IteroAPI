@@ -28,6 +28,16 @@ namespace Mnemo.Controllers
 
 
         
+        [HttpGet]
+        public async Task<IActionResult> GetAllRepetitionStates()
+        {
+            var states = await _stateQueries.GetAllByUserIdAsync(UserId);
+
+            var statesDto = Mapper.MapToDto(states);
+            return Ok(statesDto);
+        }
+
+        
         [HttpPost("{id:int}/assess")]
         public async Task<IActionResult> SelfAssessmentRepetitionState(int id, [FromBody] QualityAssessmentRequest request)
         {

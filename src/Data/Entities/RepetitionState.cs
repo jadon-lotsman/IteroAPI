@@ -6,12 +6,12 @@ namespace Mnemo.Data.Entities
     {
         public int Id { get; set; }
 
-        public int IterationCounter { get; set; }
-        public int IterationInterval { get; set; }
+        public int RepetitionCounter { get; set; }
+        public int RepetitionInterval { get; set; }
         public double EasinessFactor { get; set; }
         public bool CanSelfAssess { get; set; }
         public DateOnly LastRepetitionAt { get; set; }
-        public DateOnly NextRepetitionAt => LastRepetitionAt.AddDays(IterationInterval);
+        public DateOnly NextRepetitionAt => LastRepetitionAt.AddDays(RepetitionInterval);
 
 
         public int UserId { get; set; }
@@ -24,8 +24,8 @@ namespace Mnemo.Data.Entities
 
         public RepetitionState(int userId, VocabularyEntry entry)
         {
-            IterationCounter    = 0;
-            IterationInterval   = SM2Helper.MinInterval;
+            RepetitionCounter    = 0;
+            RepetitionInterval   = SM2Helper.MinInterval;
             EasinessFactor      = SM2Helper.InitEF;
             CanSelfAssess       = false;
             LastRepetitionAt    = DateOnly.FromDateTime(DateTime.UtcNow);
